@@ -25,6 +25,8 @@ use core_reportbuilder\event\schedule_deleted;
 use core_reportbuilder\event\schedule_updated;
 use core_reportbuilder_generator;
 use core_user\reportbuilder\datasource\users;
+use core_local_company\reportbuilder\datasource\companys;
+
 
 /**
  * Unit tests for the schedule model

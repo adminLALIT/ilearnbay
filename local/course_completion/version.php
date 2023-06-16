@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   local_company
+ * @package   local_course_completion
  * @copyright 2021 Derick Turner
  * @author    Derick Turner
  * @basedon   Standard Moodle template selector
@@ -23,7 +23,7 @@
  */
 
 $plugin->release  = '4.1.2 (Build: 20230313)'; // Human-friendly version name
-$plugin->version  = 2023061002;   // The (date) version of this plugin.
+$plugin->version  = 2023061003;   // The (date) version of this plugin.
 $plugin->requires = 2019052000;   // Requires this Moodle version.
-$plugin->component  = 'local_company';
-$plugin->autoload = 'local/company/';
+$plugin->component  = 'local_course_completion';
+$plugin->autoload = 'local/course_completion/';

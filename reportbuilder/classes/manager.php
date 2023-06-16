@@ -134,6 +134,7 @@ class manager {
         $sources = array();
 
         $datasources = core_component::get_component_classes_in_namespace(null, 'reportbuilder\\datasource');
+        
         foreach ($datasources as $class => $path) {
             if (self::report_source_exists($class, datasource::class) && self::report_source_available($class)) {
 
