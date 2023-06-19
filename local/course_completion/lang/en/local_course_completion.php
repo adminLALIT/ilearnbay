@@ -27,9 +27,12 @@
  */
 $string['pluginname'] = 'Course Completion';
 $string['coursecompletion'] = 'Course Completion Report';
+$string['course_completion'] = 'Company Course Completion Report';
 $string['user'] = 'User';
 $string['companyuserreport'] = 'Company User Report';
 $string['companydetail'] = 'Company Details';
 $string['companyshortname'] = 'Company Short Name';
+$string['companyname'] = 'Company Name';
+$string['companycoursereport'] = 'Company Course Report';
 
 ?>

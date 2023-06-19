@@ -19,9 +19,8 @@ declare(strict_types=1);
 namespace local_course_completion\reportbuilder\local\entities;
 
 use core_reportbuilder\local\entities\base;
-use core_reportbuilder\local\filters\boolean_select;
-use core_reportbuilder\local\filters\date;
 use core_reportbuilder\local\helpers\format;
+use core_reportbuilder\local\filters\text;
 use core_reportbuilder\local\report\column;
 use core_reportbuilder\local\report\filter;
 use lang_string;
@@ -68,6 +67,7 @@ class company extends base {
 
         // All the filters defined by the entity can also be used as conditions.
         foreach ($this->get_all_filters() as $filter) {
+            
             $this
                 ->add_filter($filter)
                 ->add_condition($filter);
@@ -82,9 +82,29 @@ class company extends base {
      * @return column[]
      */
     protected function get_all_columns(): array {
-        $company = $this->get_table_alias('company');
-        
-        return [];
+        $tablealias = $this->get_table_alias('company');
+
+        // shortname column.
+        $columns[] = (new column(
+            'shortname',
+            new lang_string('companyshortname', 'local_course_completion'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->set_type(column::TYPE_TEXT)
+            ->add_field("{$tablealias}.shortname");
+
+             // name column.
+        $columns[] = (new column(
+            'name',
+            new lang_string('companyname', 'local_course_completion'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->set_type(column::TYPE_TEXT)
+            ->add_field("{$tablealias}.name");
+       
+        return $columns;
     }
 
         /**
@@ -95,6 +115,7 @@ class company extends base {
     protected function get_company_fields(): array {
         return [
             'shortname' => new lang_string('companyshortname', 'local_course_completion'), 
+            'name' => new lang_string('companyname', 'local_course_completion'), 
         ];
     }
 
@@ -128,14 +149,16 @@ class company extends base {
 
         $filters = [];
         $tablealias = $this->get_table_alias('company');
+
         // company fields filters.
         $fields = $this->get_company_fields();
-       
+        
         foreach ($fields as $field => $name) {
             $filterfieldsql = "{$tablealias}.{$field}";
                 $classname = text::class;
+
             $filter = (new filter(
-                text::class,
+                $classname,
                 $field,
                 $name,
                 $this->get_entity_name(),
@@ -145,6 +168,7 @@ class company extends base {
 
             $filters[] = $filter;
         }
+  
         return $filters;
     }
 }

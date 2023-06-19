@@ -245,8 +245,7 @@ class completion extends base {
      * @return filter[]
      */
     protected function get_all_filters(): array {
-        $coursecompletion = $this->get_table_alias('course_completion');
-
+        $coursecompletion = $this->get_table_alias('course_completion');       
         // Completed status filter.
         $filters[] = (new filter(
             boolean_select::class,

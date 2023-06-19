@@ -21,8 +21,9 @@ namespace local_course_completion\reportbuilder\datasource;
 use lang_string;
 
 use core_reportbuilder\datasource;
-use core_reportbuilder\local\entities\user;
 use core_reportbuilder\local\helpers\database;
+use core_course\reportbuilder\local\entities\course_category;
+use core_reportbuilder\local\entities\course;
 use local_course_completion\reportbuilder\local\entities\company;
 
 /**
@@ -33,7 +34,7 @@ use local_course_completion\reportbuilder\local\entities\company;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class companyuser extends datasource
+class companycourse extends datasource
 {
 
     /**
@@ -43,7 +44,7 @@ class companyuser extends datasource
      */
     public static function get_name(): string
     {
-        return get_string('companyuserreport', 'local_course_completion');
+        return get_string('companycoursereport', 'local_course_completion');
     }
 
     /**
@@ -52,23 +53,30 @@ class companyuser extends datasource
     protected function initialise(): void
     {
         global $CFG;
-        // Join user entity.
-        $userentity = new user();
-        $user = $userentity->get_table_alias('user');
-        // $userentity->add_joins($enrolmententity->get_joins());
-        // $userentity->add_join("JOIN {company_users} cu ON cu.userid = {$user}.id AND {$user}.deleted = 0 AND cu.suspended = 0");
+        $courseentity = new course();
+        $coursetablealias = $courseentity->get_table_alias('course');
 
-        $this->add_entity($userentity);
+        // Exclude site course.
+        $paramsiteid = database::generate_param_name();
 
-        $this->set_main_table('user', $user);
+        $this->set_main_table('course', $coursetablealias);
+        $this->add_base_condition_sql("{$coursetablealias}.id != :{$paramsiteid}", [$paramsiteid => SITEID]);
+
+        $this->add_entity($courseentity);
+
+        // Join the course category entity.
+        $coursecatentity = new course_category();
+        $coursecattablealias = $coursecatentity->get_table_alias('course_categories');
+        $this->add_entity($coursecatentity
+            ->add_join("JOIN {course_categories} {$coursecattablealias}
+                ON {$coursecattablealias}.id = {$coursetablealias}.category"));
 
         // Join the company entity.
         $companyentity = new company();
-        $usercompany = $companyentity->get_table_alias('company');
-       
-        $enroljoin = "JOIN {company_users} cu ON cu.userid = {$user}.id";
-        $usercompanyjoin = "JOIN {company} {$usercompany} ON {$usercompany}.id = cu.companyid";
-        $companyentity->add_joins([$enroljoin, $usercompanyjoin]);
+        $companycourse = $companyentity->get_table_alias('company');       
+        $enroljoin = "JOIN {company_course} cc ON cc.courseid = {$coursetablealias}.id";
+        $companycoursejoin = "JOIN {company} {$companycourse} ON {$companycourse}.id = cc.companyid";
+        $companyentity->add_joins([$enroljoin, $companycoursejoin]);
         $this->add_entity($companyentity);
 
         // Add report elements from each of the entities we added to the report.
@@ -83,7 +91,7 @@ class companyuser extends datasource
     public function get_default_columns(): array
     {
         return [
-            'user:fullnamewithlink',
+            'course:shortname',
             'company:shortname',
         ];
     }
@@ -96,7 +104,7 @@ class companyuser extends datasource
     public function get_default_filters(): array
     {
         return [
-            'company:shortname'
+            'course:shortname'
         ];
     }
 

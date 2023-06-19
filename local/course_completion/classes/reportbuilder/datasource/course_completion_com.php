@@ -20,10 +20,14 @@ namespace local_course_completion\reportbuilder\datasource;
 
 use lang_string;
 
+use core_course\reportbuilder\local\entities\completion;
+use core_course\reportbuilder\local\entities\enrolment;
 use core_reportbuilder\datasource;
+use core_reportbuilder\local\entities\course;
 use core_reportbuilder\local\entities\user;
 use core_reportbuilder\local\helpers\database;
 use local_course_completion\reportbuilder\local\entities\company;
+
 
 /**
  * Users datasource
@@ -33,7 +37,7 @@ use local_course_completion\reportbuilder\local\entities\company;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class companyuser extends datasource
+class course_completion_com extends datasource
 {
 
     /**
@@ -43,7 +47,7 @@ class companyuser extends datasource
      */
     public static function get_name(): string
     {
-        return get_string('companyuserreport', 'local_course_completion');
+        return get_string('course_completion', 'local_course_completion');
     }
 
     /**
@@ -52,24 +56,47 @@ class companyuser extends datasource
     protected function initialise(): void
     {
         global $CFG;
+        $courseentity = new course();
+        $course = $courseentity->get_table_alias('course');
+        $this->add_entity($courseentity);
+
+        $this->set_main_table('course', $course);
+
+        // Join the enrolments entity.
+        $enrolmententity = new enrolment();
+        $userenrolment = $enrolmententity->get_table_alias('user_enrolments');
+        $enrol = $enrolmententity->get_table_alias('enrol');
+        $enroljoin = "JOIN {enrol} {$enrol} ON {$enrol}.courseid = {$course}.id";
+        $userenrolmentjoin = " JOIN {user_enrolments} {$userenrolment} ON {$userenrolment}.enrolid = {$enrol}.id";
+        $enrolmententity->add_joins([$enroljoin, $userenrolmentjoin]);
+        $this->add_entity($enrolmententity);
+
         // Join user entity.
         $userentity = new user();
         $user = $userentity->get_table_alias('user');
-        // $userentity->add_joins($enrolmententity->get_joins());
-        // $userentity->add_join("JOIN {company_users} cu ON cu.userid = {$user}.id AND {$user}.deleted = 0 AND cu.suspended = 0");
+        $userentity->add_joins($enrolmententity->get_joins());
+        $userentity->add_join("JOIN {user} {$user} ON {$userenrolment}.userid = {$user}.id AND {$user}.deleted = 0");
 
         $this->add_entity($userentity);
 
-        $this->set_main_table('user', $user);
+        // Join company entity.
+           $companyentity = new company();
+           $companycourse = $companyentity->get_table_alias('company');       
+           $enroljoin = "JOIN {company_course} cc ON cc.courseid = {$course}.id";
+           $companycoursejoin = "JOIN {company} {$companycourse} ON {$companycourse}.id = cc.companyid";
+           $companyentity->add_joins([$enroljoin, $companycoursejoin]);
+           $this->add_entity($companyentity);
 
-        // Join the company entity.
-        $companyentity = new company();
-        $usercompany = $companyentity->get_table_alias('company');
-       
-        $enroljoin = "JOIN {company_users} cu ON cu.userid = {$user}.id";
-        $usercompanyjoin = "JOIN {company} {$usercompany} ON {$usercompany}.id = cu.companyid";
-        $companyentity->add_joins([$enroljoin, $usercompanyjoin]);
-        $this->add_entity($companyentity);
+        // Join completion entity.
+        $completionentity = new completion();
+        $completion = $completionentity->get_table_alias('course_completion');
+        $completionentity->add_joins($userentity->get_joins());
+        $completionentity->add_join("
+            LEFT JOIN {course_completions} {$completion}
+            ON {$completion}.course = {$course}.id AND {$completion}.userid = {$user}.id
+        ");
+        $completionentity->set_table_alias('user', $user);
+        $this->add_entity($completionentity);
 
         // Add report elements from each of the entities we added to the report.
         $this->add_all_from_entities();
@@ -83,6 +110,7 @@ class companyuser extends datasource
     public function get_default_columns(): array
     {
         return [
+            'course:coursefullnamewithlink',
             'user:fullnamewithlink',
             'company:shortname',
         ];
@@ -96,7 +124,8 @@ class companyuser extends datasource
     public function get_default_filters(): array
     {
         return [
-            'company:shortname'
+            'course:shortname',
+            'company:shortname',
         ];
     }
 

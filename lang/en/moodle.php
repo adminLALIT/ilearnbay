@@ -245,6 +245,7 @@ $string['categorydeleted'] = 'The category \'{$a}\' was deleted';
 $string['categoryduplicate'] = 'A category named \'{$a}\' already exists!';
 $string['categoryheader'] = 'Category menu';
 $string['categoryhidden'] = '(hidden)';
+$string['graphcondition'] = 'Graph conditions';
 $string['categorymodifiedcancel'] = 'Category was modified! Please cancel and try again.';
 $string['categoryname'] = 'Category name';
 $string['categorypath'] = 'Category path';

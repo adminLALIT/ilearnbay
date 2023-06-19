@@ -96,6 +96,7 @@ class users extends datasource {
      */
     public function get_default_filters(): array {
         return ['user:fullname', 'user:username', 'user:email'];
+        // return [];
     }
 
     /**

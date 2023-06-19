@@ -500,7 +500,7 @@ class user extends base {
             } else {
                 $classname = text::class;
             }
-
+        
             $filter = (new filter(
                 $classname,
                 $field,
@@ -517,7 +517,6 @@ class user extends base {
 
             $filters[] = $filter;
         }
-
         // User select filter.
         $filters[] = (new filter(
             user_filter::class,
