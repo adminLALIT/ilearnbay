@@ -54,7 +54,7 @@ class block_iomad_reports extends block_base {
 
         // Get all local/report_*.
         $reports = $this->getreportpaths();
-
+       
         // Loop over reports.
         $this->content->text .= '<div class="iomadlink_container clearfix">';
         foreach ($reports as $report) {

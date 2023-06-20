@@ -51,7 +51,8 @@ class companyuser extends datasource
      */
     protected function initialise(): void
     {
-        global $CFG;
+        global $CFG, $USER;
+        require_once($CFG->dirroot.'/local/course_completion/lib.php');
         // Join user entity.
         $userentity = new user();
         $user = $userentity->get_table_alias('user');
@@ -67,8 +68,17 @@ class companyuser extends datasource
         $usercompany = $companyentity->get_table_alias('company');
        
         $enroljoin = "JOIN {company_users} cu ON cu.userid = {$user}.id";
-        $usercompanyjoin = "JOIN {company} {$usercompany} ON {$usercompany}.id = cu.companyid";
+        if (get_companyid_by_userid($USER->id)) {
+            $companyid = get_companyid_by_userid($USER->id);
+            $and = "AND {$usercompany}.id = $companyid";
+        }
+        else {
+            $and = '';
+        }
+
+        $usercompanyjoin = "JOIN {company} {$usercompany} ON {$usercompany}.id = cu.companyid $and";
         $companyentity->add_joins([$enroljoin, $usercompanyjoin]);
+       
         $this->add_entity($companyentity);
 
         // Add report elements from each of the entities we added to the report.

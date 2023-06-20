@@ -131,6 +131,8 @@ class manager {
      * @return array[][] Indexed by [component => [class => name]]
      */
     public static function get_report_datasources(): array {
+        global $USER, $DB;
+        $companymanagerrole = $DB->get_field('role', 'id', ['shortname' => 'companymanager']);
         $sources = array();
 
         $datasources = core_component::get_component_classes_in_namespace(null, 'reportbuilder\\datasource');
@@ -154,7 +156,10 @@ class manager {
         array_walk($sources, static function(array &$componentsources): void {
             core_collator::asort($componentsources);
         });
-
+        if (user_has_role_assignment($USER->id, $companymanagerrole)) {
+            unset($sources['Site']);
+            unset($sources['Course Completion']['local_course_completion\reportbuilder\datasource\coursecompletion']);
+        }
         return $sources;
     }
 

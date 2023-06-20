@@ -52,7 +52,8 @@ class companycourse extends datasource
      */
     protected function initialise(): void
     {
-        global $CFG;
+        global $CFG, $USER;
+        require_once($CFG->dirroot.'/local/course_completion/lib.php');
         $courseentity = new course();
         $coursetablealias = $courseentity->get_table_alias('course');
 
@@ -73,9 +74,17 @@ class companycourse extends datasource
 
         // Join the company entity.
         $companyentity = new company();
-        $companycourse = $companyentity->get_table_alias('company');       
+        $companycourse = $companyentity->get_table_alias('company');   
+
+        if (get_companyid_by_userid($USER->id)) {
+            $companyid = get_companyid_by_userid($USER->id);
+            $and = "AND {$companycourse}.id = $companyid";
+        }
+        else {
+            $and = '';
+        }  
         $enroljoin = "JOIN {company_course} cc ON cc.courseid = {$coursetablealias}.id";
-        $companycoursejoin = "JOIN {company} {$companycourse} ON {$companycourse}.id = cc.companyid";
+        $companycoursejoin = "JOIN {company} {$companycourse} ON {$companycourse}.id = cc.companyid $and";
         $companyentity->add_joins([$enroljoin, $companycoursejoin]);
         $this->add_entity($companyentity);
 

@@ -136,10 +136,12 @@ class permission {
         // to other users, they must have the specific 'editall' capability.
         $userid = $userid ?: (int) $USER->id;
         if ($report->get('usercreated') === $userid) {
-            return has_any_capability([
-                'moodle/reportbuilder:edit',
-                'moodle/reportbuilder:editall',
-            ], $report->get_context(), $userid);
+        //   die;
+        //     return has_any_capability([
+        //         'moodle/reportbuilder:edit',
+        //         'moodle/reportbuilder:editall',
+        //     ], $report->get_context(), $userid);
+            return has_capability('moodle/reportbuilder:edit', $report->get_context(), $userid);
         } else {
             return has_capability('moodle/reportbuilder:editall', $report->get_context(), $userid);
         }

@@ -52,7 +52,7 @@ class system_report_factory {
         }
 
         $report = static::get_report_persistent($source, $context, $component, $area, $itemid);
-
+      
         return manager::get_report_from_persistent($report, $parameters);
     }
 
@@ -75,10 +75,12 @@ class system_report_factory {
             'contextid' => $context->id,
             'component' => $component,
             'area' => $area,
-            'itemid' => $itemid,
+            'itemid' => $itemid
+            
         ];
 
         if ($report = report::get_record($reportdata)) {
+           
              return $report;
         }
 

@@ -104,6 +104,7 @@ class report extends dynamic_form {
             $default = ['' => ['' => get_string('selectareportsource', 'core_reportbuilder')]];
             $mform->addElement('selectgroups', 'source', get_string('reportsource', 'core_reportbuilder'),
                 array_merge($default, manager::get_report_datasources()));
+                
             $mform->addRule('source', null, 'required', null, 'client');
             $mform->addHelpButton('source', 'reportsource', 'core_reportbuilder');
 

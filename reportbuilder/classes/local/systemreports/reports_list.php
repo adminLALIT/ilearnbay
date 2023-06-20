@@ -61,6 +61,8 @@ class reports_list extends system_report {
      * Initialise the report
      */
     protected function initialise(): void {
+        global $USER, $DB;
+        $companymanagerrole = $DB->get_field('role', 'id', ['shortname' => 'companymanager']);
         $this->set_main_table('reportbuilder_report', 'rb');
         $this->add_base_condition_simple('rb.type', self::TYPE_CUSTOM_REPORT);
 
@@ -69,6 +71,10 @@ class reports_list extends system_report {
 
         // Limit the returned list to those reports the current user can access.
         [$where, $params] = audience::user_reports_list_access_sql('rb');
+        if (user_has_role_assignment($USER->id, $companymanagerrole)) {
+            $where = 'usercreated='.$USER->id;
+        }
+
         $this->add_base_condition_sql($where, $params);
 
         // Join user entity for "User modified" column.

@@ -41,9 +41,11 @@ admin_externalpage_setup('customreports', null, ['id' => $reportid], new moodle_
 navigation_node::override_active_url(new moodle_url('/reportbuilder/index.php'));
 
 $report = manager::get_report_from_id($reportid);
+
+
 permission::require_can_edit_report($report->get_report_persistent());
 
-$PAGE->set_context($report->get_context());
+// $PAGE->set_context($report->get_context());
 $PAGE->navbar->add(get_string('editreportcontent', 'core_reportbuilder'), $PAGE->url);
 $PAGE->set_pagelayout('popup');
 
