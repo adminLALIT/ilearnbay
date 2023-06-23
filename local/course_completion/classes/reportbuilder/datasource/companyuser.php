@@ -106,7 +106,7 @@ class companyuser extends datasource
     public function get_default_filters(): array
     {
         return [
-            'company:shortname'
+            'user:firstname'
         ];
     }
 

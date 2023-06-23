@@ -615,7 +615,7 @@ function profile_get_user_field(string $type, int $fieldid = 0, int $userid = 0,
     global $CFG;
 
     require_once("{$CFG->dirroot}/user/profile/field/{$type}/field.class.php");
-
+    
     // Return instance of profile field type.
     $profilefieldtype = "profile_field_{$type}";
     return new $profilefieldtype($fieldid, $userid, $fielddata);
@@ -627,8 +627,18 @@ function profile_get_user_field(string $type, int $fieldid = 0, int $userid = 0,
  * @return profile_field_base[]
  */
 function profile_get_user_fields_with_data(int $userid): array {
-    global $DB;
-
+    global $DB, $USER, $CFG;
+    require_once("{$CFG->dirroot}/local/course_completion/lib.php");
+    if (get_companyid_by_userid($USER->id)) {
+        $id = get_companyid_by_userid($USER->id);
+        $companyprofileid = $DB->get_field('company', 'profileid', ['id' => $id]);
+        // $categoryid = $DB->get_field('user_info_category', 'id', ['name' => $companyshortname]);
+       $and = "WHERE uif.categoryid = $companyprofileid";
+    }
+    else {
+        $and = "";
+    }
+    
     // Join any user info data present with each user info field for the user object.
     $sql = 'SELECT uif.*, uic.name AS categoryname ';
     if ($userid > 0) {
@@ -648,7 +658,8 @@ function profile_get_user_fields_with_data(int $userid): array {
                   SELECT id FROM {user_info_category} WHERE id NOT IN (SELECT profileid from {company}))) ";
         $params['companyuserid'] = $userid;
     }
-    $sql .= 'ORDER BY uic.sortorder ASC, uif.sortorder ASC ';
+    $sql .= ''.$and.' ORDER BY uic.sortorder ASC, uif.sortorder ASC ';
+   
     $fields = $DB->get_records_sql($sql, $params);
     $data = [];
     foreach ($fields as $field) {

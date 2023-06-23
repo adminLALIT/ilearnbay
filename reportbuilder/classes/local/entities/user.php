@@ -78,7 +78,7 @@ class user extends base {
      */
     public function initialise(): base {
         $userprofilefields = $this->get_user_profile_fields();
-
+      
         $columns = array_merge($this->get_all_columns(), $userprofilefields->get_columns());
         foreach ($columns as $column) {
             $this->add_column($column);

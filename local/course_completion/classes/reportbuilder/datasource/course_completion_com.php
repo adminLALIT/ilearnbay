@@ -134,8 +134,7 @@ class course_completion_com extends datasource
     public function get_default_filters(): array
     {
         return [
-            'course:shortname',
-            'company:shortname',
+            'course:shortname'
         ];
     }
 

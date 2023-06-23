@@ -61,16 +61,22 @@ class company extends base {
      * @return base
      */
     public function initialise(): base {
+
+        global $USER, $DB;
+        $companymanagerrole = $DB->get_field('role', 'id', ['shortname' => 'companymanager']);
+
+
         foreach ($this->get_all_columns() as $column) {
             $this->add_column($column);
         }
 
         // All the filters defined by the entity can also be used as conditions.
-        foreach ($this->get_all_filters() as $filter) {
-            
-            $this
-                ->add_filter($filter)
-                ->add_condition($filter);
+        if (!user_has_role_assignment($USER->id, $companymanagerrole)) {
+            foreach ($this->get_all_filters() as $filter) {
+                $this
+                    ->add_filter($filter)
+                    ->add_condition($filter);
+            }
         }
 
         return $this;

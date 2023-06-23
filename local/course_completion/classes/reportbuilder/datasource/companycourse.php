@@ -68,6 +68,7 @@ class companycourse extends datasource
         // Join the course category entity.
         $coursecatentity = new course_category();
         $coursecattablealias = $coursecatentity->get_table_alias('course_categories');
+       
         $this->add_entity($coursecatentity
             ->add_join("JOIN {course_categories} {$coursecattablealias}
                 ON {$coursecattablealias}.id = {$coursetablealias}.category"));
@@ -83,8 +84,8 @@ class companycourse extends datasource
         else {
             $and = '';
         }  
-        $enroljoin = "JOIN {company_course} cc ON cc.courseid = {$coursetablealias}.id";
-        $companycoursejoin = "JOIN {company} {$companycourse} ON {$companycourse}.id = cc.companyid $and";
+        $enroljoin = "JOIN {company_course} comco ON comco.courseid = {$coursetablealias}.id";
+        $companycoursejoin = "JOIN {company} {$companycourse} ON {$companycourse}.id = comco.companyid $and";
         $companyentity->add_joins([$enroljoin, $companycoursejoin]);
         $this->add_entity($companyentity);
 
