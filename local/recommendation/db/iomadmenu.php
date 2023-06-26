@@ -30,7 +30,7 @@ function local_recommendation_menu() {
                 'category' => 'CompanyAdmin',
                 'tab' => 1,
                 'name' => get_string('courserecommend', 'local_recommendation'),
-                'url' => '/local/recommendation/',
+                'url' => '/local/recommendation/domain_list.php',
                 'cap' => 'local/recommendation:courserec',
                 'icondefault' => 'emailtemplates',
                 'style' => 'company',

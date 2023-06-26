@@ -27,31 +27,76 @@ require_once('form.php');
 require_login();
 
 global $DB;
+$id = optional_param('id', 0, PARAM_INT);
+$return = new moodle_url('/local/recommendation/domain_list.php');
+$delete = optional_param('delete', 0, PARAM_BOOL);
+$confirm = optional_param('confirm', 0, PARAM_BOOL);
+$returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url($CFG->wwwroot.'/local/recommendation/index.php');
 $PAGE->set_title('Course Recommendation');
 $PAGE->set_heading('Course Recommendation');
 $PAGE->set_pagelayout('admin');
-echo $OUTPUT->header();
+
+if ($id) {
+  $instance = $DB->get_record('company_course_domain', array('id' => $id), '*', MUST_EXIST);
+
+  if ($delete && $instance->id) {
+
+      if ($confirm && confirm_sesskey()) {
+          // Delete existing files first.
+          $DB->delete_records('company_course_domain', ['id' => $instance->id]);
+          redirect($returnurl);
+      }
+      $strheading = 'Delete Domain';
+      $PAGE->navbar->add($strheading);
+      $PAGE->set_title($strheading);
+      echo $OUTPUT->header();
+      echo $OUTPUT->heading($strheading);
+      $yesurl = new moodle_url('/local/recommendation/index.php', array(
+          'id' => $instance->id, 'delete' => 1,
+          'confirm' => 1, 'sesskey' => sesskey(), 'returnurl' => $returnurl
+      ));
+      $message = "Do you really want to delete domain?";
+      echo $OUTPUT->confirm($message, $yesurl, $returnurl);
+      echo $OUTPUT->footer();
+      die;
+  }
+} else {
+  $editoroptions['subdirs'] = 0;
+  $instance = new stdClass();
+  $instance->id = null;
+  $instance->companyid = null;
+}
 
 //Instantiate simplehtml_form 
-$mform = new courseform();
+$mform = new courseform(null, ['instance'=>$instance, 'id' => $id]);
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
+  redirect($return);
     //Handle form cancel operation, if cancel button is present on form
 } else if ($fromform = $mform->get_data()) {
-  //In this case you process validated data. $mform->get_data() returns data posted in form.
-} else {
-  // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
-  // or on the first display of the form.
-
-  //Set default data (if any)
-//   $mform->set_data($toform);
-  //displays the form
-  $mform->display();
+  $fromform->userid = $USER->id;
+  if ($fromform->domainid) { 
+    $fromform->id = $fromform->domainid;
+    $fromform->timemodified = time();
+    $updated = $DB->update_record('company_course_domain', $fromform);
+    if ($updated) {
+        redirect($return, 'Record Updated Successfully', null, \core\output\notification::NOTIFY_INFO);
+    }
+  }
+  else {
+    $fromform->timecreated = time();
+   $inserted =  $DB->insert_record('company_course_domain', $fromform, $returnid=true, $bulk=false);
+  }
+ if ($inserted) {
+ redirect($return, 'Record Save Successfully', null,  \core\output\notification::NOTIFY_SUCCESS);
+ }
 }
+echo $OUTPUT->header();
+$mform->display();
 echo $OUTPUT->footer();
 
 ?>
