@@ -29,3 +29,4 @@ $string['domainexist'] = 'Domain Exists';
 $string['selectdomain'] = 'Select Domain';
 $string['profilerule'] = 'PROFILE RULES';
 $string['profilefield'] = 'Profile Field';
+$string['addmorefield'] = 'Blanks for {no} more field';

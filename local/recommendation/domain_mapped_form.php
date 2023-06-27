@@ -25,60 +25,104 @@
 // moodleform is defined in formslib.php
 require_once("$CFG->libdir/formslib.php");
 require_once("$CFG->dirroot/local/course_completion/lib.php");
-class domain_mapped_form extends moodleform {
+class domain_mapped_form extends moodleform
+{
     // Add elements to form
-    public function definition() {
+    public function definition()
+    {
         global $CFG, $USER, $DB;
-        $id = optional_param('id', 0, PARAM_INT);
-     
-        $mform = $this->_form; // Don't forget the underscore! 
 
-        $companyies = $DB->get_records_menu('company', ['suspended' => 0], $sort='id desc', $fields='*', $limitfrom=0, $limitnum=0);        // Add the new key-value pair at the beginning of the array
+        $mform = $this->_form; // Don't forget the underscore! 
+        $id = $this->_customdata['id'];
+        $instance = $this->_customdata['instance'];
+        if ($id) {
+            $companyies = $DB->get_records_menu('company', ['suspended' => 0, 'id' => $instance->companyid], $sort = 'id desc', $fields = '*', $limitfrom = 0, $limitnum = 0);        // Add the new key-value pair at the beginning of the array
+            $domaininitial = $DB->get_records_sql_menu("SELECT id, domain FROM {company_course_domain} WHERE id = $instance->domainid ORDER BY id desc");
+        } else {
+            $companyies = $DB->get_records_menu('company', ['suspended' => 0], $sort = 'id desc', $fields = '*', $limitfrom = 0, $limitnum = 0);        // Add the new key-value pair at the beginning of the array
+            $domaininitial = ['' => 'Select Domain'];
+        }
+
         $selectcompany = array('' => 'Select') + $companyies;
         if (get_companyid_by_userid($USER->id)) {
-           $companyid =  get_companyid_by_userid($USER->id);
-           $domains = $DB->get_records_sql_menu("SELECT id, domain FROM {company_course_domain} WHERE companyid = $companyid ORDER BY id desc");
+            $companyid =  get_companyid_by_userid($USER->id);
+            $domains = $DB->get_records_sql_menu("SELECT id, domain FROM {company_course_domain} WHERE id = $companyid ORDER BY id desc");
         }
-            $profield = $DB->get_records_sql_menu("SELECT id, name FROM {user_info_field} ORDER BY id desc");
-        $mform->addElement('hidden', 'domainid', $id);
-        $mform->setType('domainid', PARAM_INT);
-        $domaininitial = ['' => 'Select Domain'];
+        $profield = $DB->get_records_sql_menu("SELECT id, name FROM {user_info_field} ORDER BY id desc");
+
+        $mform->addElement('hidden', 'id', $id);
+        $mform->setType('id', PARAM_INT);
+
         if (is_siteadmin()) {
             $mform->addElement('select', 'companyid', get_string('selectcompany', 'local_recommendation'), $selectcompany, array('onchange' => 'javascript:getdomain();'));
             $mform->addRule('companyid', get_string('required'), 'required', 'extraruledata', 'server', false, false);
-            $mform->addElement('select', 'domain', get_string('selectdomain', 'local_recommendation'), $domaininitial);
+
+            $select =   $mform->addElement('select', 'domain', get_string('selectdomain', 'local_recommendation'), $domaininitial);
+        } else {
+            $select =   $mform->addElement('select', 'domain', get_string('selectdomain', 'local_recommendation'), $domains);
         }
-        else {
-            $mform->addElement('select', 'domain', get_string('selectdomain', 'local_recommendation'), $domains);
+        if ($id) {
+            $select->setSelected($instance->domainid);
         }
+
         $mform->addRule('domain', get_string('required'), 'required', 'extraruledata', 'server', false, false);
-        
+
         $mform->addElement('header', 'profilerule', get_string('profilerule', 'local_recommendation'));
         $mform->setExpanded('profilerule', false);
 
-        $options = array(                                                                                                           
-            'multiple' => true,                                                  
-            'noselectionstring' => 'Please Select',                                                                
-        ); 
-        $mform->addElement('autocomplete', 'profilefield', get_string('profilefield', 'local_recommendation'), $profield, $options);
-        $mform->addRule('profilefield', get_string('required'), 'required', null, 'server');
-        
-        $mform->addElement('text', 'profiletext', null);
-        $mform->addRule('profiletext', get_string('required'), 'required', 'extraruledata', 'server', false, false);
+        $options = array(
+            'multiple' => true,
+            'noselectionstring' => 'Please Select',
+            'class' => 'profilefieldclass'
+        );
+
+        $repeatarray = array();
+        $repeatarray[] = $mform->createElement('autocomplete', 'profilefield', get_string('profilefield', 'local_recommendation'), $profield, $options);
+        $repeatarray[] = $mform->createElement('html', '<div class="qheader" style="display:flex; padding-left: 21%; gap: 91px;">');
+        $repeatarray[] = $mform->createElement('text', 'profiletext', null, ['style' => 'margin-left: 5px;']);
+        $repeatarray[] = $mform->createElement('html', '<a href="#" class="mt-2 text-dark"><i class="fa fa-trash"></i></a>');
+        $repeatarray[] = $mform->createElement('html', '</div>');
+       
         $mform->setType('profiletext', PARAM_TEXT);
-        
+        $repeatno = 1;
+        $repeateloptions = array();
+        $repeateloptions['limit']['default'] = 0;
+        $repeateloptions['limit']['disabledif'] = array('limitanswers', 'eq', 0);
+        $repeateloptions['limit']['rule'] = 'numeric';
+        $repeateloptions['limit']['type'] = PARAM_INT;
+        $this->repeat_elements(
+            $repeatarray,
+            $repeatno,
+            $repeateloptions,
+            'field_repeats',
+            'field_add_fields',
+            1,
+            $this->get_more_choices_string(),
+            true
+        );
+
         $this->add_action_buttons();
-         
+        $this->set_data($instance);
     }
+
+    /**
+     * Language string to use for 'Add {no} more {whatever we call answers}'.
+     */
+    function get_more_choices_string()
+    {
+        return get_string('addmorefield', 'local_recommendation');
+    }
+
     // Custom validation should be added here.
-    function validation($data, $files) {
+    function validation($data, $files)
+    {
         global $CFG, $DB, $USER;
 
         $validated = array();
         $data = (object)$data;
-        if (empty($data->profilefield)) {
-            $validated['profilefield'] = '- '.get_string('err_required', 'form');
-        }
+        // if (empty($data->profilefield)) {
+        //     $validated['profilefield'] = '- ' . get_string('err_required', 'form');
+        // }
         return $validated;
     }
 }

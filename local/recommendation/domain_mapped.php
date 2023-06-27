@@ -28,10 +28,11 @@ require_login();
 
 global $DB;
 $id = optional_param('id', 0, PARAM_INT);
-$return = new moodle_url('/local/recommendation/domain_mapped.php');
-// $delete = optional_param('delete', 0, PARAM_BOOL);
-// $confirm = optional_param('confirm', 0, PARAM_BOOL);
-// $returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
+$domain = optional_param('domain', 0, PARAM_INT);
+$return = new moodle_url('/local/recommendation/mapped_list.php');
+$delete = optional_param('delete', 0, PARAM_BOOL);
+$confirm = optional_param('confirm', 0, PARAM_BOOL);
+$returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url($CFG->wwwroot.'/local/recommendation/domain_mapped.php');
@@ -40,64 +41,60 @@ $PAGE->set_heading('Domain Mapped Form');
 $PAGE->set_pagelayout('admin');
 $PAGE->requires->js('/local/recommendation/amd/src/mapped.js');
 
-// if ($id) {
-//   $instance = $DB->get_record('company_course_domain', array('id' => $id), '*', MUST_EXIST);
+if ($id) {
+  $instance = $DB->get_record('domain_mapping', array('id' => $id), '*', MUST_EXIST);
 
-//   if ($delete && $instance->id) {
+  if ($delete && $instance->id) {
 
-//       if ($confirm && confirm_sesskey()) {
-//           // Delete existing files first.
-//           $DB->delete_records('company_course_domain', ['id' => $instance->id]);
-//           redirect($returnurl);
-//       }
-//       $strheading = 'Delete Domain';
-//       $PAGE->navbar->add($strheading);
-//       $PAGE->set_title($strheading);
-//       echo $OUTPUT->header();
-//       echo $OUTPUT->heading($strheading);
-//       $yesurl = new moodle_url('/local/recommendation/index.php', array(
-//           'id' => $instance->id, 'delete' => 1,
-//           'confirm' => 1, 'sesskey' => sesskey(), 'returnurl' => $returnurl
-//       ));
-//       $message = "Do you really want to delete domain?";
-//       echo $OUTPUT->confirm($message, $yesurl, $returnurl);
-//       echo $OUTPUT->footer();
-//       die;
-//   }
-// } else {
-//   $editoroptions['subdirs'] = 0;
-//   $instance = new stdClass();
-//   $instance->id = null;
-//   $instance->companyid = null;
-// }
+      if ($confirm && confirm_sesskey()) {
+          // Delete existing files first.
+          $DB->delete_records('domain_mapping', ['id' => $instance->id]);
+          redirect($returnurl);
+      }
+      $strheading = 'Delete this domain mapping';
+      $PAGE->navbar->add($strheading);
+      $PAGE->set_title($strheading);
+      echo $OUTPUT->header();
+      echo $OUTPUT->heading($strheading);
+      $yesurl = new moodle_url('/local/recommendation/domain_mapped.php', array(
+          'id' => $instance->id, 'delete' => 1,
+          'confirm' => 1, 'sesskey' => sesskey(), 'returnurl' => $returnurl
+      ));
+      $message = "Do you really want to delete domain mapping?";
+      echo $OUTPUT->confirm($message, $yesurl, $returnurl);
+      echo $OUTPUT->footer();
+      die;
+  }
+} else {
+  $instance = new stdClass();
+  $instance->id = null;
+}
 
 //Instantiate simplehtml_form 
-$mform = new domain_mapped_form();
+$mform = new domain_mapped_form(null, ['id' => $id, 'instance' => $instance]);
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
+
   redirect($return);
     //Handle form cancel operation, if cancel button is present on form
 } else if ($fromform = $mform->get_data()) {
-//   $fromform->userid = $USER->id;
-//   if ($fromform->domainid) { 
-//     $fromform->id = $fromform->domainid;
-//     $fromform->timemodified = time();
-//     $updated = $DB->update_record('company_course_domain', $fromform);
-//     if ($updated) {
-//         redirect($return, 'Record Updated Successfully', null, \core\output\notification::NOTIFY_INFO);
-//     }
-//   }
-//   else {
-//     $fromform->timecreated = time();
-//    $inserted =  $DB->insert_record('company_course_domain', $fromform, $returnid=true, $bulk=false);
-//   }
-//  if ($inserted) {
-//  redirect($return, 'Record Save Successfully', null,  \core\output\notification::NOTIFY_SUCCESS);
-//  }
+ 
+  $fromform->userid = $USER->id;
+  $fromform->domainid = $domain;
+  $fromform->time_created = time();
+  $profilefield = $fromform->profilefield;
+  $profiletext = $fromform->profiletext;
+ 
+  for ($i=0; $i < count($profilefield); $i++) { 
+    $fromform->profilefield = implode(",", $profilefield[$i]);
+    $fromform->profiletext = $profiletext[$i];
+    $inserted =  $DB->insert_record('domain_mapping', $fromform, $returnid=true, $bulk=false);
+  }
+ if ($inserted) {
+ redirect($return, 'Record Save Successfully', null,  \core\output\notification::NOTIFY_SUCCESS);
+ }
 }
 echo $OUTPUT->header();
 $mform->display();
 echo $OUTPUT->footer();
-
-?>
