@@ -25,32 +25,32 @@
 require_once("../../config.php");
 require_once("$CFG->libdir/tablelib.php");
 require_once('filter_form.php');
-require_once("domain_table.php");
+require_once("assign_course_table.php");
 require_once("$CFG->dirroot/local/course_completion/lib.php");
 
 require_login();
 $context = context_system::instance();
 $PAGE->set_context($context);
-$PAGE->set_url($CFG->wwwroot . '/local/recommendation/domain_list.php');
-$PAGE->set_title('Domain List');
-$PAGE->set_heading('Domain List');
+$PAGE->set_url($CFG->wwwroot . '/local/recommendation/assign_course_list.php');
+$PAGE->set_title('Assign Course List');
+$PAGE->set_heading('Assign Course List');
 $PAGE->set_pagelayout('standard');
 if (optional_param('cancel', false, PARAM_BOOL)) {
-    redirect(new moodle_url('/local/recommendation/domain_list.php'));
+    redirect(new moodle_url('/local/recommendation/assign_course_list.php'));
 }
 echo $OUTPUT->header();
 
-$table = new domain_list('uniqueid');
+$table = new assign_course_list('uniqueid');
 $mform = new domain_list_form();
 if ($mform->is_cancelled()) {
     // Handle form cancel operation, if cancel button is present on form.
 } else if ($fromform = $mform->get_data()) {
     if ($fromform->search && $fromform->companyid){
 
-        $where = 'ccd.domain LIKE "%'. $fromform->search .'%" AND c.id = ' . $fromform->companyid . '';
+        $where = 'ccd.assign_course LIKE "%'. $fromform->search .'%" AND c.id = ' . $fromform->companyid . '';
     }
     elseif ($fromform->search) {
-        $where = 'ccd.domain LIKE "%'. $fromform->search .'%"';
+        $where = 'ccd.assign_course LIKE "%'. $fromform->search .'%"';
     }
     elseif ($fromform->companyid) {
         $where = 'c.id = ' . $fromform->companyid . '';
@@ -67,20 +67,21 @@ if ($mform->is_cancelled()) {
     }
 }
 
-$field = 'ccd.*, c.name';
-$from = "{company_course_domain} ccd JOIN {company} c ON c.id = ccd.companyid";
+$field = 'cac.id, cac.content, c.name, co.fullname as coursename, ccd.domain, u.username';
+$from = "{curator_assign_course} cac JOIN {company} c ON c.id = cac.companyid LEFT JOIN {course} co ON co.id = cac.course LEFT JOIN {company_course_domain} ccd ON ccd.id = cac.domain LEFT JOIN {user} u ON u.id = cac.curatoruserid";
 // Work out the sql for the table.
 $table->set_sql($field, $from, $where);
-$table->define_baseurl("$CFG->wwwroot/local/recommendation/domain_list.php");
+$table->define_baseurl("$CFG->wwwroot/local/recommendation/assign_course_list.php");
 
 $table->no_sorting('action');
+$table->no_sorting('coursename');
 $mform->display();
 echo html_writer::start_tag('div', ['style' => 'float:right']);
 if (is_siteadmin()) {
-    echo $OUTPUT->single_button($CFG->wwwroot . '/local/recommendation/', 'Add Domain');
+    echo $OUTPUT->single_button($CFG->wwwroot . '/local/recommendation/assign_course.php', 'Assign Course');
 }
-echo $OUTPUT->single_button($CFG->wwwroot . '/local/recommendation/domain_mapped.php', 'Domain Mapped');
-echo $OUTPUT->single_button($CFG->wwwroot . '/local/recommendation/assign_course_list.php', 'Assign Course List');
+// echo $OUTPUT->single_button($CFG->wwwroot . '/local/recommendation/assign_course_mapped.php', 'assign_course Mapped');
+// echo $OUTPUT->single_button($CFG->wwwroot . '/local/recommendation/assign_course.php', 'Assign Course');
 echo html_writer::end_tag('div');
 echo "<br>";
 echo "<br>";

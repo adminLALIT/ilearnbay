@@ -35,10 +35,15 @@ class domain_mapped_form extends moodleform
         $mform = $this->_form; // Don't forget the underscore! 
         $id = $this->_customdata['id'];
         $instance = $this->_customdata['instance'];
+    
+
         if ($id) {
+            $allrecord = $DB->get_records('domain_mapping', ['companyid' => $instance->companyid, 'domainid' => $instance->domainid]);
+            // $repeatno = count($allrecord);
             $companyies = $DB->get_records_menu('company', ['suspended' => 0, 'id' => $instance->companyid], $sort = 'id desc', $fields = '*', $limitfrom = 0, $limitnum = 0);        // Add the new key-value pair at the beginning of the array
             $domaininitial = $DB->get_records_sql_menu("SELECT id, domain FROM {company_course_domain} WHERE id = $instance->domainid ORDER BY id desc");
         } else {
+            // $repeatno = 1;
             $companyies = $DB->get_records_menu('company', ['suspended' => 0], $sort = 'id desc', $fields = '*', $limitfrom = 0, $limitnum = 0);        // Add the new key-value pair at the beginning of the array
             $domaininitial = ['' => 'Select Domain'];
         }
@@ -77,19 +82,34 @@ class domain_mapped_form extends moodleform
         );
 
         $repeatarray = array();
-        $repeatarray[] = $mform->createElement('autocomplete', 'profilefield', get_string('profilefield', 'local_recommendation'), $profield, $options);
+        $repeatarray[] = $mform->createElement('html', '<div class="separate">');
+        $repeatarray[] = $autoselect = $mform->createElement('autocomplete', 'profilefield', get_string('profilefield', 'local_recommendation'), $profield, $options);
         $repeatarray[] = $mform->createElement('html', '<div class="qheader" style="display:flex; padding-left: 21%; gap: 91px;">');
         $repeatarray[] = $mform->createElement('text', 'profiletext', null, ['style' => 'margin-left: 5px;']);
-        $repeatarray[] = $mform->createElement('html', '<a href="#" class="mt-2 text-dark"><i class="fa fa-trash"></i></a>');
+        $repeatarray[] = $mform->createElement('html', '<a href="#" class="mt-2 text-dark"><i class="fa fa-trash delete"></i></a>');
         $repeatarray[] = $mform->createElement('html', '</div>');
-       
+        $repeatarray[] = $mform->createElement('html', '</div>');
+        if ($id) {
+            $autoselect->setSelected($instance->profilefield);
+        }
+      
         $mform->setType('profiletext', PARAM_TEXT);
-        $repeatno = 1;
+        $mform->setDefault('profiletext[0]', $instance->profiletext);
         $repeateloptions = array();
-        $repeateloptions['limit']['default'] = 0;
-        $repeateloptions['limit']['disabledif'] = array('limitanswers', 'eq', 0);
-        $repeateloptions['limit']['rule'] = 'numeric';
-        $repeateloptions['limit']['type'] = PARAM_INT;
+        // if ($id) {
+        //     if ($allrecord) {
+        //         $i = 0;
+        //         foreach($allrecord as $allrecordvalue){
+        //             $fields = explode(",", $allrecordvalue->profilefield);
+        //             $fields = array_map('intval', $fields);
+                    
+        //             $repeateloptions['profilefield']['default'] = $fields;
+        //             $i++;
+        //         }
+        //     }
+        // }
+
+        $repeatno = 1;
         $this->repeat_elements(
             $repeatarray,
             $repeatno,
@@ -120,9 +140,9 @@ class domain_mapped_form extends moodleform
 
         $validated = array();
         $data = (object)$data;
-        // if (empty($data->profilefield)) {
-        //     $validated['profilefield'] = '- ' . get_string('err_required', 'form');
-        // }
+        if (empty($data->profilefield)) {
+            $validated['profilefield'] = '- ' . get_string('err_required', 'form');
+        }
         return $validated;
     }
 }

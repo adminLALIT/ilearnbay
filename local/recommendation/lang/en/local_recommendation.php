@@ -23,6 +23,9 @@
 $string['pluginname'] = 'Course Recommendation ';
 $string['courserecommend'] = 'Course Recommendation ';
 $string['selectcompany'] = 'Select Company';
+$string['selectcourse'] = 'Select Course';
+$string['selectcontent'] = 'Select Content';
+$string['selectcurator'] = 'Select Curator User';
 $string['domainname'] = 'Domain Name';
 $string['searchdomain'] = 'Search Domain';
 $string['domainexist'] = 'Domain Exists';

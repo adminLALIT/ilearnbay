@@ -148,6 +148,7 @@ if ($id) {
 
 $qtypeobj = question_bank::get_qtype($question->qtype);
 
+
 if (isset($question->categoryobject)) {
     $category = $question->categoryobject;
 } else {
@@ -247,7 +248,7 @@ if ($mform->is_cancelled()) {
 
 } else if ($fromform = $mform->get_data()) {
     // If we are saving as a copy, break the connection to the old question.
-   
+
     if ($makecopy) {
         $question->id = 0;
         // Copies should not be hidden.
