@@ -87,25 +87,14 @@ if ($mform->is_cancelled()) {
   $fromform->content = implode(",", $fromform->content);
 
   if ($id) {
-    // $fromform->id = $id;
-    // $fromform->time_modified = time();
-    // if (count($profilefield) < 2) {
-    //   $fromform->profiletext = $profiletext[0];
-    //   $updated = $DB->update_record('curator_assign_course', $fromform);
-    // }
-    // else {
-    //   $fromform->userid = $USER->id;
-    //   $fromform->domainid = $domain;
-    //   $fromform->time_created = time();
-    //   for ($i=1; $i < count($profilefield); $i++) { 
-    //     $fromform->profilefield = implode(",", $profilefield[$i]);
-    //     $fromform->profiletext = $profiletext[$i];
-    //     $updated = $DB->insert_record('curator_assign_course', $fromform, $returnid=true, $bulk=false);
-    //   }
-    // }
-    // if ($updated) {
-    //     redirect($return, 'Record updated Successfully', null, \core\output\notification::NOTIFY_INFO);
-    // }
+    $fromform->id = $id;
+    $fromform->time_modified = time();
+      $updated = $DB->update_record('curator_assign_course', $fromform);
+    
+    if ($updated) {
+        redirect($return, 'Record updated Successfully', null, \core\output\notification::NOTIFY_INFO);
+    }
+  
   } else {
     $fromform->time_created = time();
 

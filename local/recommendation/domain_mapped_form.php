@@ -91,10 +91,10 @@ class domain_mapped_form extends moodleform
         $repeatarray[] = $mform->createElement('html', '</div>');
         if ($id) {
             $autoselect->setSelected($instance->profilefield);
+            $mform->setDefault('profiletext[0]', $instance->profiletext);
         }
       
         $mform->setType('profiletext', PARAM_TEXT);
-        $mform->setDefault('profiletext[0]', $instance->profiletext);
         $repeateloptions = array();
         // if ($id) {
         //     if ($allrecord) {
@@ -108,7 +108,7 @@ class domain_mapped_form extends moodleform
         //         }
         //     }
         // }
-
+          
         $repeatno = 1;
         $this->repeat_elements(
             $repeatarray,
@@ -118,7 +118,8 @@ class domain_mapped_form extends moodleform
             'field_add_fields',
             1,
             $this->get_more_choices_string(),
-            true
+            true,
+            'delete'
         );
 
         $this->add_action_buttons();
