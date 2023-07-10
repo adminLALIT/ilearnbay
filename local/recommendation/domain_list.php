@@ -81,6 +81,7 @@ if (is_siteadmin()) {
 }
 echo $OUTPUT->single_button($CFG->wwwroot . '/local/recommendation/domain_mapped.php', 'Domain Mapped');
 echo $OUTPUT->single_button($CFG->wwwroot . '/local/recommendation/assign_course_list.php', 'Assign Course List');
+echo $OUTPUT->single_button($CFG->wwwroot . '/local/recommendation/recommend.php', 'Course Recommendation');
 echo html_writer::end_tag('div');
 echo "<br>";
 echo "<br>";

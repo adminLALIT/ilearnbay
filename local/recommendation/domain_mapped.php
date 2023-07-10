@@ -43,6 +43,15 @@ $PAGE->requires->js('/local/recommendation/amd/src/mapped.js');
 
 if ($id) {
   $instance = $DB->get_record('domain_mapping', array('id' => $id), '*', MUST_EXIST);
+  $instance->profilefield = [];
+  $instance->profiletext = [];
+  $allrecord = $DB->get_records('domain_mapping', array('companyid' => $instance->companyid, 'domainid' => $instance->domainid));
+  $i = 0;
+  foreach($allrecord as $allvalue){
+    $instance->profilefield[$i] = $allvalue->profilefield;
+    $instance->profiletext[$i] = $allvalue->profiletext;
+    $i++;
+  }
 
   if ($delete && $instance->id) {
 
@@ -71,7 +80,7 @@ if ($id) {
 }
 
 //Instantiate simplehtml_form 
-$mform = new domain_mapped_form(null, ['id' => $id, 'instance' => $instance]);
+$mform = new domain_mapped_form(null, ['id' => $id, 'instance' => $instance, 'domain' => $domain]);
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
@@ -79,48 +88,51 @@ if ($mform->is_cancelled()) {
   redirect($return);
     //Handle form cancel operation, if cancel button is present on form
 } else if ($fromform = $mform->get_data()) {
+
   $profilefield = $fromform->profilefield;
   $profiletext = $fromform->profiletext;
+  if($check = $DB->get_records('domain_mapping',['companyid' => $fromform->companyid, 'domainid' => $fromform->domain])){
+		$DB->delete_records('domain_mapping', array('companyid' => $fromform->companyid, 'domainid' => $fromform->domain));
+	}
 
-  if ($id) {
-    $fromform->id = $id;
-    $fromform->time_modified = time();
-    if (count($profilefield) < 2) {
-      $fromform->profilefield = implode(",", $profilefield[0]);
-      $fromform->profiletext = $profiletext[0];
-      $updated = $DB->update_record('domain_mapping', $fromform);
-    }
-    else {
-      $fromform->userid = $USER->id;
-      $fromform->domainid = $domain;
-      $fromform->time_created = time();
-      for ($i=1; $i < count($profilefield); $i++) { 
-        $fromform->profilefield = implode(",", $profilefield[$i]);
-        $fromform->profiletext = $profiletext[$i];
-        $updated = $DB->insert_record('domain_mapping', $fromform, $returnid=true, $bulk=false);
-      }
-    }
-    if ($updated) {
-        redirect($return, 'Record updated Successfully', null, \core\output\notification::NOTIFY_INFO);
-    }
-  }
-  else {
+  // if ($id) {
+  //   $fromform->id = $id;
+  //   $fromform->time_modified = time();
+  //   if (count($profilefield) < 2) {
+  //     $fromform->profilefield =$profilefield[0];
+  //     $fromform->profiletext = $profiletext[0];
+  //     $updated = $DB->update_record('domain_mapping', $fromform);
+  //   }
+  //   else {
+  //     $fromform->userid = $USER->id;
+  //     $fromform->domainid = $domain;
+  //     $fromform->time_created = time();
+  //     for ($i=1; $i < count($profilefield); $i++) { 
+  //       $fromform->profilefield = $profilefield[$i];
+  //       $fromform->profiletext = $profiletext[$i];
+  //       $updated = $DB->insert_record('domain_mapping', $fromform, $returnid=true, $bulk=false);
+  //     }
+  //   }
+  //   if ($updated) {
+  //       redirect($return, 'Record updated Successfully', null, \core\output\notification::NOTIFY_INFO);
+  //   }
+  // }
+  // else {
     $fromform->userid = $USER->id;
     $fromform->domainid = $domain;
     $fromform->time_created = time();
 
     for ($i=0; $i < count($profilefield); $i++) { 
-      $fromform->profilefield = implode(",", $profilefield[$i]);
+      $fromform->profilefield = $profilefield[$i];
       $fromform->profiletext = $profiletext[$i];
       $inserted =  $DB->insert_record('domain_mapping', $fromform, $returnid=true, $bulk=false);
     }
-  
    if ($inserted) {
    redirect($return, 'Record Save Successfully', null,  \core\output\notification::NOTIFY_SUCCESS);
    }
   }  
 
-}
+// }
 echo $OUTPUT->header();
 $mform->display();
 echo $OUTPUT->footer();
