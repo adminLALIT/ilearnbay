@@ -62,6 +62,11 @@
             <ul class="dropdown-menu dropdown-menu-left" data-region="moredropdown" aria-labelledby="moremenu-dropdown-{{moremenuid}}" role="menu">
             </ul>
         </li>
+         <li data-key="recommendation" class="nav-item" role="none" data-forceintomoremenu="false">
+                                            <a role="{{#istablist}}tab{{/istablist}}{{^istablist}}menuitem{{/istablist}}" class="nav-link {{#isactive}}active{{/isactive}}" href="{{{config.wwwroot}}}/local/recommendation/recommend.php" aria-haspopup="true" aria-expanded="false" tabindex="-1">
+                                                Course Recommendation
+                                            </a>
+                                </li>
     </ul>
 </nav>
 {{#js}}

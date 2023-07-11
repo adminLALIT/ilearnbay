@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{{config.wwwroot}}}/local/recommendation/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{{config.wwwroot}}}/local/recommendation/css/videocontent.css">
+</head>
+
+<body>
+
+    <div class="search-form-container">
+        <form id="keywordForm" method="post" action="">
+            <div class="input-row">
+                Search Video : <input class="input-field" type="search" id="keyword" name="keyword" value="{{keyword}}" placeholder="Enter Search Video">
+            </div>
+
+            <input class="btn-submit" type="submit" name="submit" value="Search">
+        </form>
+    </div>
+
+        <div class="response {{responsetype}}"> {{responsemsg}}</div>
+       <form action="youtubecontent.php" method="post">
+
+                <div class="result-heading">About {{maxresults}} Results</div>
+                <div class="videos-data-container" id="SearchResultsDiv">
+                        {{#searchresults}}
+                            <div class="video-tile">
+                                <div class="videoDiv">
+                                    <iframe id="iframe" style="width:100%;height:100%" src="//www.youtube.com/embed/{{videoid}}" data-autoplay-src="//www.youtube.com/embed/{{videoid}}?autoplay=1"></iframe>
+                                </div>
+                                <input type="checkbox" name="{{videolink}}" id="">
+                                <div class="videoInfo">
+                                    <div class="videoTitle"><b>{{title}}</b></div>
+                                    <div class="videoDesc">{{description}}</div>
+                                </div>
+                            </div>
+                     {{/searchresults}}
+
+            
+            <input type="submit" value="Submit" class="btn btn-primary">
+                </div>
+            </form>
+
+</body>
+
+</html>
