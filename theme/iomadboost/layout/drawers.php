@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/behat/lib.php');
 require_once($CFG->dirroot . '/course/lib.php');
-
+require_once($CFG->dirroot.'/local/recommendation/lib.php');
 // Add block button in editing mode.
 $addblockbutton = $OUTPUT->addblockbutton();
 
@@ -106,5 +106,11 @@ $templatecontext = [
     'headercontent' => $headercontent,
     'addblockbutton' => $addblockbutton
 ];
+
+
+if (is_curator() || is_student()) {
+    $templatecontext['curator'] = true;
+}
+   
 
 echo $OUTPUT->render_from_template('theme_iomadboost/drawers', $templatecontext);

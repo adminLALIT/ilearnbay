@@ -15,13 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   local_recommendation
- * @copyright 2021 Derick Turner
- * @author    Derick Turner
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Capabilities for the timeline block.
+ *
+ * @package    block_timeline
+ * @copyright  2018 Ryan Wyllie <ryan@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->release  = '4.1.2 (Build: 20230313)'; // Human-friendly version name
-$plugin->version  = 2023030904;   // The (date) version of this plugin.
-$plugin->requires = 2019052000;   // Requires this Moodle version.
-$plugin->component  = 'local_recommendation';
+defined('MOODLE_INTERNAL') || die();
+
+$capabilities = array(
+
+    'block/dashboard:myaddinstance' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'user' => CAP_ALLOW
+        ),
+
+        'clonepermissionsfrom' => 'moodle/my:manageblocks'
+    )
+);

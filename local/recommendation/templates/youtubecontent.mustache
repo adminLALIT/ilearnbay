@@ -9,15 +9,53 @@
 
     <div class="search-form-container">
         <form id="keywordForm" method="post" action="">
-            <div class="input-row">
-                Search Video : <input class="input-field" type="search" id="keyword" name="keyword" value="{{keyword}}" placeholder="Enter Search Video">
-            </div>
-
-            <input class="btn-submit" type="submit" name="submit" value="Search">
+                 <label for="domain">Select Domain :</label>
+                <select name="domain" id="domain" class="input-field" onchange="getcourses(this.value)" required>
+                  <option value="">Select..</option>
+                {{#domains}}
+                  <option value="{{id}}" {{selected}}>{{domainname}}</option>
+                {{/domains}}
+                </select><br>
+                 <label for="course">Select Course :</label>
+                  <select name="course" id="course" class="input-field" required> 
+                  {{#selectcourse}}
+                  <option value="{{id}}" selected>{{fullname}}</option>
+                  {{/selectcourse}}
+                  {{^selectcourse}}
+                  <option value="">Select..</option>
+                  {{/selectcourse}}
+                </select><br>
+                 <!-- <label for="keyword">Search Video :</label>
+                 <input class="input-field" type="search" id="keyword" name="keyword" value="{{keyword}}" placeholder="Enter Search Video"><br> -->
+                 
+                <div class="response {{responsetype}}"> {{responsemsg}}</div>
+                <div class="result-heading">About {{maxresults}} Results</div>
+                <div class="videos-data-container" id="SearchResultsDiv">
+                        {{#searchresults}}
+                        <input type="hidden" name="videos" value="video">
+                            <div class="video-tile">
+                                <div class="videoDiv">
+                                    <iframe id="iframe" style="width:100%;height:100%" src="//www.youtube.com/embed/{{videoid}}" data-autoplay-src="//www.youtube.com/embed/{{videoid}}?autoplay=1"></iframe>
+                                </div>
+                                <input type="checkbox" name="videoid_{{videoid}}" id="" value="{{videolink}}">
+                                <!-- <input type="hidden" name="videotitle_{{title}}" value="{{title}}">
+                                <input type="hidden" name="videodesc_{{description}}" value="{{description}}"> -->
+                                <div class="videoInfo">
+                                    <div class="videoTitle"><b>{{title}}</b></div>
+                                    <div class="videoDesc">{{description}}</div>
+                                </div>
+                            </div>
+                        {{/searchresults}}
+                 {{! <input type="submit" value="Submit" class="btn btn-primary"> }}
+                </div>
+            
+            <input class="btn-submit" type="submit" name="submit" value="Submit">
+            <button name="cancel" id="cancel" class="btn-submit" onclick="reload()">Cancel</button>
+            {{! <input class="btn-submit" type="reset" name="reset" value="Cancel"> }}
         </form>
     </div>
 
-        <div class="response {{responsetype}}"> {{responsemsg}}</div>
+       <!--  <div class="response {{responsetype}}"> {{responsemsg}}</div>
        <form action="youtubecontent.php" method="post">
 
                 <div class="result-heading">About {{maxresults}} Results</div>
@@ -38,8 +76,38 @@
             
             <input type="submit" value="Submit" class="btn btn-primary">
                 </div>
-            </form>
+            </form> -->
 
+<script src="{{{config.wwwroot}}}/local/recommendation/amd/src/jquery.js"></script>
+<script>
+$('.nav-link').removeClass('active');
+$('.custom').addClass('active');
+
+function getcourses(domainid) {
+    if(domainid){
+
+$.ajax({
+    method: 'POST',
+    url: 'getdomain.php',
+    dataType: 'json',
+    async: false,
+    data: {
+        domainid : domainid
+    },
+    success: function(json){
+        $("#course").html(json.courseoptions);
+    }
+
+
+})
+    }
+}
+
+function reload() {
+    window.location.href = 'savedvideos.php';
+}
+
+</script>
 </body>
 
 </html>
