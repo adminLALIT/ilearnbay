@@ -25,6 +25,8 @@
 require_once("../../config.php");
 require_once("$CFG->libdir/tablelib.php");
 require_once($CFG->dirroot."/local/recommendation/video_table.php");
+require_once('lib.php');
+
 
 require_login();
 $context = context_system::instance();
@@ -35,6 +37,9 @@ $PAGE->set_heading('Saved Videos');
 $PAGE->set_pagelayout('standard');
 if (optional_param('cancel', false, PARAM_BOOL)) {
     redirect(new moodle_url('/local/recommendation/savedvideos.php'));
+}
+if (!is_curator()) {
+    throw new moodle_exception(get_string('nopermission', 'local_recommendation', 'core'));
 }
 echo $OUTPUT->header();
 

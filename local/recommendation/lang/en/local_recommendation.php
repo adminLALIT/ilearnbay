@@ -34,3 +34,5 @@ $string['profilerule'] = 'PROFILE RULES';
 $string['profilefield'] = 'Profile Field';
 $string['addmorefield'] = 'Blanks for {no} more field';
 $string['nopermission'] = 'Sorry you dont have permission to access this page.';
+$string['emptyvideos'] = 'Sorry there is no video available.';
+$string['emptykeyword'] = 'Please enter the keyword.';

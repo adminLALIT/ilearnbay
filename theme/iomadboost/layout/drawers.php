@@ -111,6 +111,8 @@ $templatecontext = [
 if (is_curator() || is_student()) {
     $templatecontext['curator'] = true;
 }
-   
+if (is_student()) {
+    $templatecontext['student'] = true;
+}
 
 echo $OUTPUT->render_from_template('theme_iomadboost/drawers', $templatecontext);

@@ -69,6 +69,13 @@
                                             </a>
                                 </li>
                                 {{/curator}}   
+                                {{#student}}   
+                                <li data-key="domain" class="nav-item" role="none" data-forceintomoremenu="false">
+                                            <a role="{{#istablist}}tab{{/istablist}}{{^istablist}}menuitem{{/istablist}}" class="nav-link customdomain " href="{{{config.wwwroot}}}/local/recommendation/domrecommed.php" aria-haspopup="true" aria-expanded="false" tabindex="-1">
+                                                Domain Recommendation
+                                            </a>
+                                </li>
+                                {{/student}}   
     </ul>
 </nav>
 {{#js}}

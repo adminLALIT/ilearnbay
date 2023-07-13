@@ -31,7 +31,12 @@ class videos extends table_sql
     function col_videolink($values)
     {
         global $DB;
-        $video =   html_writer::div("".html_writer::div("".html_writer::start_tag('iframe', ['id' =>'iframe', 'style' => 'width:100%;height:100%', 'src' => '//www.youtube.com/embed/'.$values->videoid.'', 'data-autoplay-src' =>'//www.youtube.com/embed/'.$values->videoid.'?autoplay=1']).html_writer::end_tag('iframe'), 'videoDiv'), 'video-tile');
+        if ($values->contenttype == 'youtube') {
+            $video =   html_writer::div("".html_writer::div("".html_writer::start_tag('iframe', ['id' =>'iframe', 'style' => 'width:100%;height:100%', 'src' => '//www.youtube.com/embed/'.$values->videoid.'', 'data-autoplay-src' =>'//www.youtube.com/embed/'.$values->videoid.'?autoplay=1']).html_writer::end_tag('iframe'), 'videoDiv'), 'video-tile');
+        }
+        else {
+            $video = html_writer::div("".html_writer::div("".html_writer::start_tag('iframe', ['id' =>'iframe', 'style' => 'width:100%;height:100%', 'src' => ''.$values->videolink.'', 'data-autoplay-src' =>''.$values->videolink.'?autoplay=1']).html_writer::end_tag('iframe'), 'videoDiv'), 'video-tile');
+        }
         return $video;
     }
 

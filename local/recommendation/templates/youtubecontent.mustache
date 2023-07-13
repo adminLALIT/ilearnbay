@@ -4,9 +4,7 @@
     <link rel="stylesheet" href="{{{config.wwwroot}}}/local/recommendation/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{{config.wwwroot}}}/local/recommendation/css/videocontent.css">
 </head>
-
 <body>
-
     <div class="search-form-container">
         <form id="keywordForm" method="post" action="">
                  <label for="domain">Select Domain :</label>
@@ -30,14 +28,20 @@
                  
                 <div class="response {{responsetype}}"> {{responsemsg}}</div>
                 <div class="result-heading">About {{maxresults}} Results</div>
+                        <label for="youtube">Youtube Content</label>
                 <div class="videos-data-container" id="SearchResultsDiv">
+
                         {{#searchresults}}
+                        {{#curatorcondition}}
                         <input type="hidden" name="videos" value="video">
+                        {{/curatorcondition}}
                             <div class="video-tile">
                                 <div class="videoDiv">
                                     <iframe id="iframe" style="width:100%;height:100%" src="//www.youtube.com/embed/{{videoid}}" data-autoplay-src="//www.youtube.com/embed/{{videoid}}?autoplay=1"></iframe>
                                 </div>
+                                {{#curatorcondition}}
                                 <input type="checkbox" name="videoid_{{videoid}}" id="" value="{{videolink}}">
+                                {{/curatorcondition}}
                                 <!-- <input type="hidden" name="videotitle_{{title}}" value="{{title}}">
                                 <input type="hidden" name="videodesc_{{description}}" value="{{description}}"> -->
                                 <div class="videoInfo">
@@ -46,6 +50,30 @@
                                 </div>
                             </div>
                         {{/searchresults}}
+                        </div>
+                        <br>
+                        <label for="vimeo">Vimeo Content</label>
+                        <div class="videos-data-container">
+                          {{#vimeovideos}}
+                        {{#curatorcondition}}
+                        <input type="hidden" name="vimeovideo" value="vimeovideo">
+                        {{/curatorcondition}}
+                            <div class="video-tile">
+                                <div class="videoDiv">
+                                    <iframe id="iframe" style="width:100%;height:100%" src="{{iframeurl}}" data-autoplay-src="{{iframeurl}}?autoplay=1"></iframe>
+                                </div>
+                                {{#curatorcondition}}
+                                <input type="checkbox" name="vcdeoid_{{videoid}}" id="vcdeoid_{{videoid}}" value="{{iframeurl}}">
+                                {{/curatorcondition}}
+                                <!-- <input type="hidden" name="videotitle_{{title}}" value="{{title}}">
+                                <input type="hidden" name="videodesc_{{description}}" value="{{description}}"> -->
+                                <div class="videoInfo">
+                                    <div class="videoTitle"><b>{{videotitle}}</b></div>
+                                    <div class="videoDesc">{{description}}</div>
+                                </div>
+
+                            </div>
+                        {{/vimeovideos}}
                  {{! <input type="submit" value="Submit" class="btn btn-primary"> }}
                 </div>
             
@@ -54,30 +82,6 @@
             {{! <input class="btn-submit" type="reset" name="reset" value="Cancel"> }}
         </form>
     </div>
-
-       <!--  <div class="response {{responsetype}}"> {{responsemsg}}</div>
-       <form action="youtubecontent.php" method="post">
-
-                <div class="result-heading">About {{maxresults}} Results</div>
-                <div class="videos-data-container" id="SearchResultsDiv">
-                        {{#searchresults}}
-                            <div class="video-tile">
-                                <div class="videoDiv">
-                                    <iframe id="iframe" style="width:100%;height:100%" src="//www.youtube.com/embed/{{videoid}}" data-autoplay-src="//www.youtube.com/embed/{{videoid}}?autoplay=1"></iframe>
-                                </div>
-                                <input type="checkbox" name="{{videolink}}" id="">
-                                <div class="videoInfo">
-                                    <div class="videoTitle"><b>{{title}}</b></div>
-                                    <div class="videoDesc">{{description}}</div>
-                                </div>
-                            </div>
-                     {{/searchresults}}
-
-            
-            <input type="submit" value="Submit" class="btn btn-primary">
-                </div>
-            </form> -->
-
 <script src="{{{config.wwwroot}}}/local/recommendation/amd/src/jquery.js"></script>
 <script>
 $('.nav-link').removeClass('active');
@@ -104,7 +108,7 @@ $.ajax({
 }
 
 function reload() {
-    window.location.href = 'savedvideos.php';
+     window.location.href = '{{cancelpage}}';
 }
 
 </script>

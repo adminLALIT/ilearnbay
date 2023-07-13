@@ -285,7 +285,7 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
         /// Let's get them all set up.
         if (complete_user_login($user)) {
 
-            if (isloggedin()) {
+            // if (isloggedin()) {
                 if ($DB->record_exists('company_users', ['userid' => $USER->id, 'suspended' => 0])) {
                     $companyid = $DB->get_field('company_users', 'companyid', ['userid' => $USER->id]);
                     $hostname = $DB->get_field('company', 'hostname', ['id' => $companyid, 'suspended' => 0]);
@@ -298,7 +298,7 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
                         die();
                     }
                 }
-            }
+            // }
         }
 
         \core\session\manager::apply_concurrent_login_limit($user->id, session_id());

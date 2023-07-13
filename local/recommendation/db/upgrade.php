@@ -63,6 +63,7 @@ function xmldb_local_recommendation_upgrade($oldversion): bool
         $table->add_field('companyid', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL);
         $table->add_field('videoid', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL);
         $table->add_field('videolink', XMLDB_TYPE_TEXT, '200', null, null);
+        $table->add_field('contenttype', XMLDB_TYPE_CHAR, '100', null, null);
         $table->add_field('domain', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL);
         $table->add_field('course', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL);
         $table->add_field('time_created', XMLDB_TYPE_INTEGER, '20', null, null);
@@ -75,6 +76,24 @@ function xmldb_local_recommendation_upgrade($oldversion): bool
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
+
+        $table = new xmldb_table('additional_domains');
+
+        // Add columns.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('studentuserid', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL);
+        $table->add_field('companyid', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL);
+        $table->add_field('domainid', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '20', null, null);
+
+        // Add keys.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Create the table.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
     }
 
     if ($oldversion < 2023051103) {

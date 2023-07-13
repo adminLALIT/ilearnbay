@@ -46,12 +46,13 @@ if (!is_curator() && !is_student()) {
 
 define("MAX_RESULTS", 20);
 $searchvideos = [];
-$responsetype = ''; 
+$vimeovideos = [];
+$responsetype = '';
 $responsemsg =  '';
 $keyword = '';
 $domainid = 0;
 $courseid = '';
-
+$curatorcondition = false;
 if ($delete && $id) {
 
     if ($confirm && confirm_sesskey()) {
@@ -73,13 +74,20 @@ if ($delete && $id) {
     echo $OUTPUT->footer();
     die;
 }
+// Return values.
+if (is_curator()) {
+    $return = 'savedvideos.php';
+} else {
+    $return = 'recommend.php';
+}
+
 
 if (isset($_POST['submit'])) {
     $domainid = $_POST['domain'];
     $courseid = $_POST['course'];
     $companyid = $DB->get_field('company_course_domain', 'companyid', ['id' => $domainid]);
-    // If videos is coming.
-    if (isset($_POST['videos'])) {
+    // If youtubevideos is coming.
+    if (isset($_POST['videos']) || isset($_POST['vimeovideo'])) {
         $submitdata = $_POST;
         $content = new stdClass();
         $content->curatorid = $USER->id;
@@ -88,72 +96,139 @@ if (isset($_POST['submit'])) {
         $content->course = $courseid;
         $content->time_created = time();
         foreach ($submitdata as $key => $value) {
-           $pos =  stripos($key, "ideoid_");
-           if (!empty($pos)) {
-               $videoid =  str_replace("videoid_","", $key);
-               $content->videoid = $videoid;
-               $content->videolink = $value;
-                $inserted = $DB->insert_record('curator_save_content', $content, $returnid=true, $bulk=false);
-           }
-         
+            $pos =  stripos($key, "ideoid_");
+            $vipos =  stripos($key, "cdeoid_");
+            if (!empty($pos)) {
+                $videoid =  str_replace("videoid_", "", $key);
+                $content->contenttype = 'youtube';
+                $content->videoid = $videoid;
+                $content->videolink = $value;
+                $inserted = $DB->insert_record('curator_save_content', $content, $returnid = true, $bulk = false);
+            }
+            if (!empty($vipos)) {
+                $videoid =  str_replace("vcdeoid_", "", $key);
+                $content->contenttype = 'vimeo';
+                $content->videoid = $videoid;
+                $content->videolink = $value;
+                $inserted = $DB->insert_record('curator_save_content', $content, $returnid = true, $bulk = false);
+            }
         }
         if ($inserted) {
-           redirect('recommend.php', 'Record saved successfully', null, \core\output\notification::NOTIFY_SUCCESS);
+            redirect($return, 'Record saved successfully', null, \core\output\notification::NOTIFY_SUCCESS);
+        } else {
+            redirect($return);
         }
-        else {
-            redirect('recommend.php');
-        }
-      
-    }
-    else {
+    } else {
         $keyword = $DB->get_field('company_course_domain', 'domain', ['id' => $_POST['domain']]);
+        if (is_curator()) {
+            $getcontenttype = $DB->get_field_sql("SELECT cac.content FROM {curator_assign_course} cac WHERE cac.domain = $domainid AND cac.course = $courseid AND cac.curatoruserid = $USER->id");
+        } else {
+            $getcontenttype = $DB->get_field_sql("SELECT cac.content FROM {curator_assign_course} cac WHERE cac.domain = $domainid AND cac.course = $courseid");
+        }
+
         if (empty($keyword)) {
             $response = array(
                 "type" => "error",
-                "message" => "Please enter the keyword."
+                "message" => get_string('emptykeyword', 'local_recommendation')
             );
             if (!empty($response)) {
-                $responsetype =  $response["type"]; 
+                $responsetype =  $response["type"];
                 $responsemsg =  $response["message"];
-             }
+            }
         }
-    
+
         if (!empty($keyword)) {
-            $apikey = get_config('youtube', 'apikey');
-            $googleApiUrl = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q=' . $keyword . '&maxResults=' . MAX_RESULTS . '&key=' . $apikey;
-            
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_URL, $googleApiUrl);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-            curl_setopt($ch, CURLOPT_VERBOSE, 0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            $response = curl_exec($ch);
-            
-            curl_close($ch);
-            $data = json_decode($response);
-            $value = json_decode(json_encode($data), true);
-            
-            for ($i = 0; $i < MAX_RESULTS; $i++) {
-                if (isset($value['items'][$i]['id']['videoId'])) {
-                    $videoId = $value['items'][$i]['id']['videoId'];
-                    $title = $value['items'][$i]['snippet']['title'];
-                    $description = $value['items'][$i]['snippet']['description'];
-                    $videolink = '//www.youtube.com/embed/' . $videoId . '';
-    
-                    $searchvideos[] = [
-                        'videoid' => $videoId,
-                        'videolink' => $videolink,
-                        'description' => $description,
-                        'title' => $title,
-                    ];
+            // Get youtube content.
+            $getcontent = explode(",", $getcontenttype); // If content contains multiple words.
+            // if ($getcontenttype == 'youtube') {
+            if ((in_array("youtube", $getcontent))) {
+
+                $response =  get_youtube_content($keyword);
+                $data = json_decode($response);
+                $value = json_decode(json_encode($data), true);
+                for ($i = 0; $i < MAX_RESULTS; $i++) {
+                    if (isset($value['items'][$i]['id']['videoId'])) {
+                        $videoId = $value['items'][$i]['id']['videoId'];
+                        if (is_student()) {
+                            if ($DB->record_exists('curator_save_content', ['domain' => $domainid, 'course' => $courseid, 'videoid' => $videoId])) {
+                                $title = $value['items'][$i]['snippet']['title'];
+                                $description = $value['items'][$i]['snippet']['description'];
+                                $videolink = '//www.youtube.com/embed/' . $videoId . '';
+                                $searchvideos[] = [
+                                    'videoid' => $videoId,
+                                    'videolink' => $videolink,
+                                    'description' => $description,
+                                    'title' => $title,
+                                ];
+                            }
+                        } else {
+                            $title = $value['items'][$i]['snippet']['title'];
+                            $description = $value['items'][$i]['snippet']['description'];
+                            $videolink = '//www.youtube.com/embed/' . $videoId . '';
+
+                            $searchvideos[] = [
+                                'videoid' => $videoId,
+                                'videolink' => $videolink,
+                                'description' => $description,
+                                'title' => $title,
+                            ];
+                        }
+                    }
                 }
-            
+                if (count($searchvideos) == 0) {
+                    $response = array(
+                        "type" => "error",
+                        "message" => get_string('emptyvideos', 'local_recommendation')
+                    );
+                    if (!empty($response)) {
+                        $responsetype =  $response["type"];
+                        $responsemsg =  $response["message"];
+                    }
+                }
+            }
+
+            // if ($getcontenttype == 'vimeo') {
+            if (in_array("vimeo", $getcontent)) {
+                // Get vimeo content.
+                $vimeoresponse =  get_vimeo_content($keyword);
+                $vimeodata = json_decode($vimeoresponse, true);
+
+                // Check if the response was successful
+                if ($vimeodata && isset($vimeodata['data'])) {
+                    $videos = $vimeodata['data'];
+                    foreach ($videos as $video) {
+                        $videoTitle = $video['name'];
+                        $videouri = $video['uri'];
+                        $videoarr = explode('/', $videouri);
+                        $videoid = end($videoarr);
+                        if (is_student()) {
+                            if ($DB->record_exists('curator_save_content', ['domain' => $domainid, 'course' => $courseid, 'videoid' => $videoid])) {
+                                $videodescription = $video['description'];
+                                $videodescription =  substr($videodescription, 0, 30) . "...";
+                                $iframeurl = $video['player_embed_url'];
+                                $vimeovideos[] = [
+                                    'videotitle' => $videoTitle,
+                                    'description' => $videodescription,
+                                    'iframeurl' => $iframeurl,
+                                    'videoid' => $videoid,
+                                ];
+                            }
+                        } else {
+                            $videodescription = $video['description'];
+                            $videodescription =  substr($videodescription, 0, 30) . "...";
+                            $iframeurl = $video['player_embed_url'];
+                            $vimeovideos[] = [
+                                'videotitle' => $videoTitle,
+                                'description' => $videodescription,
+                                'iframeurl' => $iframeurl,
+                                'videoid' => $videoid,
+                            ];
+                        }
+                    }
+                }
             }
         }
     }
-
 }
 $selectcourse = [];
 // Get submit course.
@@ -168,17 +243,16 @@ if (!empty($courseid)) {
 // Get assign courses and domains.
 $domains = [];
 if (is_curator()) {
+    $curatorcondition = true;
     $assigndomain = $DB->get_records_sql_menu("SELECT id, domain FROM {company_course_domain} WHERE id IN (SELECT domain FROM {curator_assign_course} WHERE curatoruserid = $USER->id)");
-}
-else {
-    $assigndomain = $DB->get_records_sql_menu("SELECT id, domain FROM {company_course_domain} WHERE id IN (SELECT domainid FROM {domain_mapping} WHERE profilefield IN (SELECT fieldid FROM {user_info_data} WHERE userid = $USER->id))");
+} else {
+    $assigndomain = $DB->get_records_sql_menu("SELECT id, domain FROM {company_course_domain} WHERE id IN (SELECT domainid FROM {domain_mapping} WHERE profilefield IN (SELECT fieldid FROM {user_info_data} WHERE userid = $USER->id)) OR id IN (SELECT domainid FROM {additional_domains} WHERE studentuserid = $USER->id)");
 }
 if (!empty($assigndomain)) {
-    foreach($assigndomain as $key => $domainvalue){
+    foreach ($assigndomain as $key => $domainvalue) {
         if ($key == $domainid) {
-           $selected = 'selected';
-        }
-        else {
+            $selected = 'selected';
+        } else {
             $selected = '';
         }
         $domains[] = [
@@ -189,13 +263,17 @@ if (!empty($assigndomain)) {
     }
 }
 $data = [
-'searchresults' => $searchvideos,
-'maxresults' => MAX_RESULTS,
-'responsetype' => $responsetype,
-'responsemsg' => $responsemsg,
-'keyword' => $keyword,
-'domains' => $domains,
-'selectcourse' => $selectcourse
+    'searchresults' => $searchvideos,
+    'maxresults' => MAX_RESULTS,
+    'responsetype' => $responsetype,
+    'responsemsg' => $responsemsg,
+    'keyword' => $keyword,
+    'domains' => $domains,
+    'selectcourse' => $selectcourse,
+    'curatorcondition' => $curatorcondition,
+    'cancelpage' => $return,
+    'vimeovideos' => $vimeovideos,
+
 ];
 echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('local_recommendation/youtubecontent', $data);
