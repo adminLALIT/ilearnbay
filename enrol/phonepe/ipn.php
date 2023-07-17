@@ -253,7 +253,7 @@ if (strlen($result) > 0) {
         } else {
             $teacher = false;
         }
-
+        
         $mailstudents = $plugin->get_config('mailstudents');
         $mailteachers = $plugin->get_config('mailteachers');
         $mailadmins   = $plugin->get_config('mailadmins');

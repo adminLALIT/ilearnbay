@@ -60,9 +60,9 @@ class gateway extends \core_payment\gateway {
         $mform->addElement('text', 'saltindex', get_string('saltindex', 'paygw_phonepe'));
         $mform->setType('saltindex', PARAM_TEXT);
 
-        $mform->addElement('text', 'secret', get_string('secret', 'paygw_phonepe'));
-        $mform->setType('secret', PARAM_TEXT);
-        $mform->addHelpButton('secret', 'secret', 'paygw_phonepe');
+        // $mform->addElement('text', 'secret', get_string('secret', 'paygw_phonepe'));
+        // $mform->setType('secret', PARAM_TEXT);
+        // $mform->addHelpButton('secret', 'secret', 'paygw_phonepe');
     }
 
     /**

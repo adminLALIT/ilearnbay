@@ -3,10 +3,10 @@
 <p><?php print_string("paymentrequired") ?></p>
 <p><b><?php echo $instancename; ?></b></p>
 <p><b><?php echo get_string("cost").": {$instance->currency} {$localisedcost}"; ?></b></p>
-<p><img alt="<?php print_string('phonepeaccepted', 'enrol_phonepe') ?>" src="https://www.phonepe.com/en_US/i/logo/phonepe_mark_60x38.gif" /></p>
+<p><img alt="<?php print_string('phonepeaccepted', 'enrol_phonepe') ?>" src="<?php echo $CFG->wwwroot.'/enrol/phonepe/pix/phonepe.png'; ?>" style="width:100px;" /></p>
 <p><?php print_string("paymentinstant") ?></p>
 <?php
-    $phonepeurl = empty($CFG->usephonepesandbox) ? 'https://www.phonepe.com/cgi-bin/webscr' : 'https://www.sandbox.phonepe.com/cgi-bin/webscr';
+    $phonepeurl = $CFG->wwwroot.'/local/recommendation/phonepay.php';
 ?>
 <form action="<?php echo $phonepeurl ?>" method="post">
 

@@ -35,13 +35,18 @@ class domain_assign extends moodleform
         $mform = $this->_form; // Don't forget the underscore! 
         $domaininital = ['' => 'Select']; 
         $studentdomain = $DB->get_records_sql("SELECT * FROM {domain_mapping} WHERE profilefield IN (SELECT fieldid FROM {user_info_data} WHERE userid = $USER->id)");
+        $domainid = [];
         foreach($studentdomain as $domainvalue){
             $domainid[] = $domainvalue->domainid;
         }
-        $domainids = implode(",", $domainid);
-        $companyid = $DB->get_field('company_users', 'companyid', ['userid' => $USER->id]);
-        $domain = $DB->get_records_sql_menu("SELECT id, domain FROM {company_course_domain} WHERE companyid = (SELECT companyid FROM {company_users} WHERE userid = $USER->id) AND id  NOT IN ($domainids) AND id NOT IN (SELECT domainid FROM {additional_domains} WHERE studentuserid = $USER->id)");
-        $domaininital = $domaininital + $domain;
+        
+        if (count($domainid) > 0) {
+            $domainids = implode(",", $domainid);
+            $companyid = $DB->get_field('company_users', 'companyid', ['userid' => $USER->id]);
+            $domain = $DB->get_records_sql_menu("SELECT id, domain FROM {company_course_domain} WHERE companyid = (SELECT companyid FROM {company_users} WHERE userid = $USER->id) AND id  NOT IN ($domainids) AND id NOT IN (SELECT domainid FROM {additional_domains} WHERE studentuserid = $USER->id)");
+            $domaininital = $domaininital + $domain;
+        }
+       
         $mform->addElement('hidden', 'companyid', $companyid);
         $mform->setType('companyid', PARAM_RAW);
 
