@@ -1,9 +1,13 @@
 <?php
 require_once('../../config.php');
 require_once($CFG->dirroot . '/enrol/locallib.php');
+require_once('lib.php');
 
+
+require_login();
 global $CFG, $USER, $PAGE;
 $receiveddata = $_POST;
+$PAGE->set_context(context_system::instance());
 
 $curl = curl_init();
 $merchantId = $receiveddata['merchantId'];
@@ -44,6 +48,7 @@ if ($err) {
     if (isset($_SESSION['courseid'])) {
       $courseid = $_SESSION['courseid'];
       $enrolid = $_SESSION['enrolid'];
+      $accountid = $_SESSION['accountid'];
       $enrol = get_config('enrol_phonepe');
       $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);  // Get course.
       $manager = new course_enrolment_manager($PAGE, $course);
@@ -96,6 +101,7 @@ if ($err) {
       $mailstudents = $phonepeplugin->get_config('mailstudents');
       $mailteachers = $phonepeplugin->get_config('mailteachers');
       $mailadmins   = $phonepeplugin->get_config('mailadmins');
+      $phonepebusiness   = $phonepeplugin->get_config('phonepebusiness');
       $shortname = format_string($course->shortname, true, array('context' => $context));
 
       $coursecontext = context_course::instance($course->id, IGNORE_MISSING);
@@ -160,6 +166,28 @@ if ($err) {
       }
       unset($_SESSION['courseid']);
       unset($_SESSION['enrolid']);
+
+
+      // Save the event data.
+      $data = $responsedata->data;
+      $paymentInstrument = $data->paymentInstrument;
+      $record = new stdClass();
+      $record->business = $phonepebusiness;
+      $record->accountid = $accountid;
+      $record->courseid = $courseid;
+      $record->userid = $USER->id;
+      $record->instanceid = $enrolid;
+      $record->roleid = $enrol->roleid;
+      $record->amount = $data->amount;  // in paise
+      $record->code = $responsedata->code;
+      $record->payment_status = $data->state;
+      $record->pending_reason = '';
+      $record->reason_code = $data->responseCode;
+      $record->transactionid = $data->transactionId;
+      $record->parent_txn_id = $paymentInstrument->pgTransactionId;
+      $record->type = $paymentInstrument->type;
+      $record->timeupdated = time();
+      $DB->insert_record('enrol_phonepe', $record, $returnid = true, $bulk = false);
       redirect($CFG->wwwroot . '/course/view.php?id=' . $courseid);
     }
   }

@@ -76,7 +76,7 @@ class gateway extends \core_payment\gateway {
     public static function validate_gateway_form(\core_payment\form\account_gateway $form,
                                                  \stdClass $data, array $files, array &$errors): void {
         if ($data->enabled &&
-                (empty($data->saltkey) || empty($data->merchantid) || empty($data->secret) || empty($data->saltindex))) {
+                (empty($data->saltkey) || empty($data->merchantid) || empty($data->saltindex))) {
             $errors['enabled'] = get_string('gatewaycannotbeenabled', 'payment');
         }
     }

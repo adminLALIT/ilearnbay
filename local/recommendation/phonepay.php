@@ -1,15 +1,25 @@
 <?php
 require_once('../../config.php');
-// $phoneperecord = $DB->get_record('payment_gateways', ['gateway' => 'phonepe', 'enabled' => 1]);
-// var_dump(get_config('phonepe'));
-// die;
+require_once('lib.php');
+
+$phoneperecord = $DB->get_record('payment_gateways', ['gateway' => 'phonepe', 'enabled' => 1]);
+if ($phoneperecord) {
+ $phonepesecrets = json_decode($phoneperecord->config);
+}
+else {
+  $phonepesecrets = '';
+}
+
 if (isset($_POST['amount'])) {
+
   $customdata = explode("-", $_POST['custom']);
   $_SESSION['courseid'] = (int)$customdata[1];
   $_SESSION['enrolid'] = (int)$customdata[2];
+  $_SESSION['accountid'] = (int)$phoneperecord->accountid;
   $curl = curl_init();
-  $merchantId = "PGTESTPAYUAT";
-  $saltkey = '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
+  $merchantId = $phonepesecrets->merchantid;
+  $saltkey = $phonepesecrets->saltkey;
+  $saltindex = $phonepesecrets->saltindex;
   $uniqueId = uniqid();
   // Generate a timestamp
   $timestamp = time();
@@ -18,10 +28,11 @@ if (isset($_POST['amount'])) {
   // Remove special characters
   $merchantTransactionId = preg_replace('/[^a-zA-Z0-9_]/', '', $transactionId);
   $merchantUserId = "MUID".$uniqueId.time();
-  $amount = ((int)$_POST['amount']) * 100;    // in paise
+  $indiancurrency = convertCurrency($_POST['currency_code'], 'INR', (int)$_POST['amount']);
+  $amount = ((int)$indiancurrency['converted_amount']) * 100;    // in paise
   $callbackUrl = "$CFG->wwwroot/local/recommendation/callback.php";
   $redirectUrl = "$CFG->wwwroot/local/recommendation/callback.php";
-  $saltindex = 1;
+  
   $parameters = [
       "merchantId" => $merchantId,
       "merchantTransactionId" => $merchantTransactionId,
