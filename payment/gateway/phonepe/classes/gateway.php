@@ -35,8 +35,7 @@ class gateway extends \core_payment\gateway {
         // See https://developer.phonepe.com/docs/api/reference/currency-codes/,
         // 3-character ISO-4217: https://en.wikipedia.org/wiki/ISO_4217#Active_codes.
         return [
-            'AUD', 'BRL', 'CAD', 'CHF', 'CZK', 'DKK', 'EUR', 'GBP', 'HKD', 'HUF', 'ILS', 'INR', 'JPY',
-            'MXN', 'MYR', 'NOK', 'NZD', 'PHP', 'PLN', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'TWD', 'USD'
+             'INR'
         ];
     }
 
@@ -63,6 +62,15 @@ class gateway extends \core_payment\gateway {
         // $mform->addElement('text', 'secret', get_string('secret', 'paygw_phonepe'));
         // $mform->setType('secret', PARAM_TEXT);
         // $mform->addHelpButton('secret', 'secret', 'paygw_phonepe');
+
+        
+        $options = [
+            'live' => get_string('live', 'paygw_paypal'),
+            'sandbox'  => get_string('sandbox', 'paygw_paypal'),
+        ];
+
+        $mform->addElement('select', 'environment', get_string('environment', 'paygw_paypal'), $options);
+        $mform->addHelpButton('environment', 'environment', 'paygw_paypal');
     }
 
     /**

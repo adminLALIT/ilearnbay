@@ -15,15 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * An activity to interface with WebEx.
  *
- * @package    paygw_phonepe
- * @copyright  2019 Shamim Rezaie <shamim@moodle.com>
+ * @package    mod_webexactvity
+ * @author     Eric Merrill <merrill@oakland.edu>
+ * @copyright  2014 Oakland University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023041902;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2022041200;        // Requires this Moodle version.
-$plugin->component = 'paygw_phonepe';       // Full name of the plugin (used for diagnostics).
+$plugin->version   = 2020072400;
+$plugin->requires  = 2019052000; // Moodle 3.7.0.
+$plugin->component = 'mod_webexactivity';
+$plugin->maturity  = MATURITY_STABLE;
+$plugin->release   = '3.9.0';

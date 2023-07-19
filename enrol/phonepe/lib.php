@@ -37,8 +37,7 @@ class enrol_phonepe_plugin extends enrol_plugin {
         // See https://www.phonepe.com/cgi-bin/webscr?cmd=p/sell/mc/mc_intro-outside,
         // 3-character ISO-4217: https://cms.phonepe.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_api_currency_codes
         $codes = array(
-            'AUD', 'BRL', 'CAD', 'CHF', 'CZK', 'DKK', 'EUR', 'GBP', 'HKD', 'HUF', 'ILS', 'INR', 'JPY',
-            'MXN', 'MYR', 'NOK', 'NZD', 'PHP', 'PLN', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'TWD', 'USD');
+            'INR');
         $currencies = array();
         foreach ($codes as $c) {
             $currencies[$c] = new lang_string($c, 'core_currencies');
@@ -422,3 +421,40 @@ class enrol_phonepe_plugin extends enrol_plugin {
         return has_capability('enrol/phonepe:config', $context);
     }
 }
+
+// function convertCurrency($from_currency,$to_currency,$amount){
+
+//     $req_url = 'https://api.exchangerate.host/latest?base='.$from_currency.'&amount='.$amount.'&symbols='.$to_currency;
+  
+//     $response_json = file_get_contents($req_url);
+  
+//     $hasConversion = false;
+//     $converted_amount = 0;
+//     if(false !== $response_json) {
+//         try {
+//             $response = json_decode($response_json);
+  
+//             if($response->success === true) {
+  
+//                  // Read conversion rate
+//                  $converted_amount = round($response->rates->$to_currency,2);
+  
+//                  $hasConversion = true;
+//             }
+  
+//         } catch(Exception $e) {
+//             // Handle JSON parse error...
+  
+//         }
+//     }
+  
+//     $return = array(
+//         "success" => $hasConversion,
+//         "amount" => $amount,
+//         "converted_amount" => $converted_amount
+//     );
+  
+//     return $return;
+//   }
+  
+

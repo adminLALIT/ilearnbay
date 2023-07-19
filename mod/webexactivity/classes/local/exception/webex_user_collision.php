@@ -15,15 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * An activity to interface with WebEx.
  *
- * @package    paygw_phonepe
- * @copyright  2019 Shamim Rezaie <shamim@moodle.com>
+ * @package    mod_webexactvity
+ * @author     Eric Merrill <merrill@oakland.edu>
+ * @copyright  2014 Oakland University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_webexactivity\local\exception;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023041902;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2022041200;        // Requires this Moodle version.
-$plugin->component = 'paygw_phonepe';       // Full name of the plugin (used for diagnostics).
+/**
+ * Exception for WebEx username or email collision.
+ *
+ * @package    mod_webexactvity
+ * @author     Eric Merrill <merrill@oakland.edu>
+ * @copyright  2014 Oakland University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class webex_user_collision extends webexactivity_exception {
+    /**
+     * Constructor
+     *
+     * @param string $debuginfo Additional info about the error.
+     */
+    public function __construct($debuginfo=null) {
+        parent::__construct('webexusercollision', '', null, $debuginfo);
+    }
+}

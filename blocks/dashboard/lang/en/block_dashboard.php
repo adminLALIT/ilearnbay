@@ -23,3 +23,4 @@
  */
 
 $string['pluginname'] = 'Dashboard';
+$string['dashboard:myaddinstance'] = '';

@@ -89,3 +89,4 @@ $string['status'] = 'Allow Phonepe enrolments';
 $string['status_desc'] = 'Allow users to use Phonepe to enrol into a course by default.';
 $string['transactions'] = 'Phonepe transactions';
 $string['unenrolselfconfirm'] = 'Do you really want to unenrol yourself from course "{$a}"?';
+$string['event_phonepe_payment'] = 'Phonepe Event';

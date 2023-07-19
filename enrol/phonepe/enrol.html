@@ -6,7 +6,7 @@
 <p><img alt="<?php print_string('phonepeaccepted', 'enrol_phonepe') ?>" src="<?php echo $CFG->wwwroot.'/enrol/phonepe/pix/phonepe.png'; ?>" style="width:100px;" /></p>
 <p><?php print_string("paymentinstant") ?></p>
 <?php
-    $phonepeurl = $CFG->wwwroot.'/local/recommendation/phonepay.php';
+    $phonepeurl = $CFG->wwwroot.'/enrol/phonepe/phonepay.php';
 ?>
 <form action="<?php echo $phonepeurl ?>" method="post">
 
@@ -26,7 +26,7 @@
 <input type="hidden" name="for_auction" value="false" />
 <input type="hidden" name="no_note" value="1" />
 <input type="hidden" name="no_shipping" value="1" />
-<input type="hidden" name="notify_url" value="<?php echo "$CFG->wwwroot/enrol/phonepe/ipn.php"?>" />
+<input type="hidden" name="notify_url" value="<?php echo "$CFG->wwwroot/enrol/phonepe/callback.php"?>" />
 <input type="hidden" name="return" value="<?php echo "$CFG->wwwroot/enrol/phonepe/return.php?id=$course->id" ?>" />
 <input type="hidden" name="cancel_return" value="<?php echo $CFG->wwwroot ?>" />
 <input type="hidden" name="rm" value="2" />

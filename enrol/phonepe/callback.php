@@ -7,8 +7,25 @@ require_once('lib.php');
 require_login();
 global $CFG, $USER, $PAGE;
 $receiveddata = $_POST;
+
 $PAGE->set_context(context_system::instance());
 
+$phoneperecord = $DB->get_record('payment_gateways', ['gateway' => 'phonepe', 'enabled' => 1]);
+
+if ($phoneperecord) {
+  $phonepesecrets = json_decode($phoneperecord->config);
+} else {
+  $phonepesecrets = '';
+}
+$saltkey = $phonepesecrets->saltkey;
+$saltindex = $phonepesecrets->saltindex;
+if ($phonepesecrets->environment == 'sandbox') {
+  $hosturl = 'https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status';
+ 
+} else {
+  $hosturl = 'https://api.phonepe.com/apis/hermes/pg/v1/status';
+  
+}
 $curl = curl_init();
 $merchantId = $receiveddata['merchantId'];
 $merchantTransactionId = $receiveddata['transactionId'];;
@@ -17,9 +34,9 @@ $parameters = [
   "merchantTransactionId" => $merchantTransactionId
 ];
 // Calculate the checksum
-$checksum = hash('sha256', "/pg/v1/status/$merchantId/$merchantTransactionId" . '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399') . "###" . 1;
+$checksum = hash('sha256', "/pg/v1/status/$merchantId/$merchantTransactionId" . $saltkey) . "###" . $saltindex;
 curl_setopt_array($curl, [
-  CURLOPT_URL => "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/$merchantId/$merchantTransactionId",
+  CURLOPT_URL => "$hosturl/$merchantId/$merchantTransactionId",
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => "",
   CURLOPT_MAXREDIRS => 10,
@@ -44,8 +61,10 @@ if ($err) {
 } else {
   $responsedata = json_decode($response);
 
-  if ($responsedata->success) {
+  if ($responsedata->code == 'PAYMENT_SUCCESS') {
+
     if (isset($_SESSION['courseid'])) {
+
       $courseid = $_SESSION['courseid'];
       $enrolid = $_SESSION['enrolid'];
       $accountid = $_SESSION['accountid'];
@@ -164,9 +183,6 @@ if ($err) {
           message_send($eventdata);
         }
       }
-      unset($_SESSION['courseid']);
-      unset($_SESSION['enrolid']);
-
 
       // Save the event data.
       $data = $responsedata->data;
@@ -188,7 +204,17 @@ if ($err) {
       $record->type = $paymentInstrument->type;
       $record->timeupdated = time();
       $DB->insert_record('enrol_phonepe', $record, $returnid = true, $bulk = false);
+
+      $event = \enrol_phonepe\event\phonepe_event::create(array('context' => context_course::instance($course->id), 'objectid' => $USER->id));
+      $event->trigger();
       redirect($CFG->wwwroot . '/course/view.php?id=' . $courseid);
     }
+  }
+  else {
+    $event = \enrol_phonepe\event\phonepe_event::create(array('context' => context_system::instance(), 'objectid' => $USER->id));
+      $event->trigger();
+    echo "Payment state : " . $responsedata->code;
+    echo "<br>";
+    echo $responsedata->message;
   }
 };

@@ -67,3 +67,4 @@ $string['expired'] = 'Expired';
 $string['coursestatus'] = '{$a} status';
 $string['coursecompletion'] = '{$a} completion';
 $string['courseexpiry'] = '{$a} expiry';
+$string['report_completion_overview:view'] = ''; 

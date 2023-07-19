@@ -15,15 +15,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * An activity to interface with WebEx.
  *
- * @package    paygw_phonepe
- * @copyright  2019 Shamim Rezaie <shamim@moodle.com>
+ * @package    mod_webexactvity
+ * @author     Eric Merrill <merrill@oakland.edu>
+ * @copyright  2014 Oakland University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_webexactivity\event;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023041902;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2022041200;        // Requires this Moodle version.
-$plugin->component = 'paygw_phonepe';       // Full name of the plugin (used for diagnostics).
+/**
+ * mod_webexactiviy was viewed.
+ *
+ * @package    mod_webexactvity
+ * @category   events
+ * @author     Eric Merrill <merrill@oakland.edu>
+ * @copyright  2014 Oakland University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class course_module_viewed extends \core\event\course_module_viewed {
+    /**
+     * Init method.
+     *
+     * @return void
+     */
+    protected function init() {
+        $this->data['crud'] = 'r';
+        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
+        $this->data['objecttable'] = 'webexactivity';
+    }
+}

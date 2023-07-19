@@ -21,7 +21,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 $string['pluginname'] = 'Course Recommendation ';
-$string['courserecommend'] = 'Course Recommendation ';
+$string['recommendation:courserec'] = '';
 $string['selectcompany'] = 'Select Company';
 $string['selectcourse'] = 'Select Course';
 $string['selectcontent'] = 'Select Content';
@@ -36,3 +36,4 @@ $string['addmorefield'] = 'Blanks for {no} more field';
 $string['nopermission'] = 'Sorry you dont have permission to access this page.';
 $string['emptyvideos'] = 'Sorry there is no video available.';
 $string['emptykeyword'] = 'Please enter the keyword.';
+$string['courserecommend'] = '';

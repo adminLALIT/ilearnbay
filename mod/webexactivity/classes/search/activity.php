@@ -15,15 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * An activity to interface with WebEx.
  *
- * @package    paygw_phonepe
- * @copyright  2019 Shamim Rezaie <shamim@moodle.com>
+ * @package    mod_webexactivity
+ * @author     Eric Merrill <merrill@oakland.edu>
+ * @copyright  2016 Oakland University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_webexactivity\search;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023041902;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2022041200;        // Requires this Moodle version.
-$plugin->component = 'paygw_phonepe';       // Full name of the plugin (used for diagnostics).
+/**
+ * Search area for mod_webexactivity activities.
+ *
+ * @package    mod_webexactivity
+ * @author     Eric Merrill <merrill@oakland.edu>
+ * @copyright  2016 Oakland University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class activity extends \core_search\base_activity {
+}
