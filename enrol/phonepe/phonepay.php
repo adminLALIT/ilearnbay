@@ -7,7 +7,7 @@ require_once($CFG->libdir . '/filelib.php');
 // phonepe does not like when we return error messages here,
 // the custom handler just logs exceptions and stops.
 set_exception_handler(\enrol_phonepe\util::get_exception_handler());
-
+$plugin = enrol_get_plugin('phonepe');
 // Make sure we are enabled in the first place.
 if (!enrol_is_enabled('phonepe')) {
     http_response_code(503);
@@ -28,7 +28,7 @@ else {
 }
 
 if (isset($_POST['amount'])) {
-
+  $amount = ((int)$_POST['amount']) * 100;    // in paise
   if ($phonepesecrets->environment == 'sandbox') {
     $hosturl = 'https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay';
   }
@@ -43,9 +43,43 @@ $data = new stdClass();
 $userid = (int)$customdata[0];
 unset($_SESSION['courseid']);
 unset($_SESSION['enrolid']);
+unset($_SESSION['amount']);
+unset($_SESSION['currency_code']);
+unset($_SESSION['userid']);
+
 $courseid = $_SESSION['courseid'] = (int)$customdata[1];
 $enrolid = $_SESSION['enrolid'] = (int)$customdata[2];
 $_SESSION['accountid'] = (int)$phoneperecord->accountid;
+$_SESSION['amount'] = $amount;
+$_SESSION['userid'] = $USER->id;
+
+$currencycode =  $_POST['currency_code'];
+
+$plugin_instance = $DB->get_record("enrol", array("id" => $enrolid, "enrol" => "phonepe", "status" => 0), "*", MUST_EXIST);
+
+// If currency is incorrectly set then someone maybe trying to cheat the system.
+if ($currencycode != $plugin_instance->currency) {
+  \enrol_phonepe\util::message_phonepe_error_to_admin(
+      "Currency does not match course settings, received: ".$currencycode,
+      $data);
+  die;
+}
+
+  // Check that amount paid is the correct amount
+  if ( (float) $plugin_instance->cost <= 0 ) {
+    $cost = (float) $plugin->get_config('cost');
+} else {
+    $cost = (float) $plugin_instance->cost;
+}
+
+// Use the same rounding of floats as on the enrol form.
+$cost = format_float($cost, 2, false);
+
+if ($amount < $cost) {
+  \enrol_phonepe\util::message_phonepe_error_to_admin("Amount paid is not enough ($amount < $cost))", $data);
+  die;
+
+}
 
 if (!$user = $DB->get_record('user', array('id'=>$userid))) {   // Check that user exists
   \enrol_phonepe\util::message_phonepe_error_to_admin("User $userid  doesn't exist", $data);
@@ -71,7 +105,7 @@ if (!$course = $DB->get_record('course', array('id'=>$courseid))) { // Check tha
   $merchantUserId = "MUID".$uniqueId.time();
   // $indiancurrency = convertCurrency($_POST['currency_code'], 'INR', (int)$_POST['amount']);
   // $amount = ((int)$indiancurrency['converted_amount']) * 100;    // in paise
-  $amount = ((int)$_POST['amount']) * 100;    // in paise
+ 
   $callbackUrl = "$CFG->wwwroot/enrol/phonepe/callback.php";
   $redirectUrl = "$CFG->wwwroot/enrol/phonepe/callback.php";
   
@@ -120,6 +154,7 @@ if (!$course = $DB->get_record('course', array('id'=>$courseid))) { // Check tha
   //   echo $response;
     if ($response) {
       $data = json_decode($response);
+    
      if ($data->success == true) {
       if ($data->data->instrumentResponse->redirectInfo->url) {
           $redirectUrl = $data->data->instrumentResponse->redirectInfo->url;
