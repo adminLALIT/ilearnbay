@@ -38,6 +38,7 @@ $string['enrolperiod'] = 'Enrolment duration';
 $string['enrolperiod_desc'] = 'Default length of time that the enrolment is valid. If set to zero, the enrolment duration will be unlimited by default.';
 $string['enrolperiod_help'] = 'Length of time that the enrolment is valid, starting with the moment the user is enrolled. If disabled, the enrolment duration will be unlimited.';
 $string['enrolstartdate'] = 'Start date';
+$string['enrolmentnewuser'] = '{$a->user} has enrolled in course "{$a->course}" ';
 $string['enrolstartdate_help'] = 'If enabled, users can be enrolled from this date onward only.';
 $string['errdisabled'] = 'The Phonepe enrolment plugin is disabled and does not handle payment notifications.';
 $string['erripninvalid'] = 'Instant payment notification has not been verified by Phonepe.';

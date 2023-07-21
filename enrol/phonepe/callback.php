@@ -199,10 +199,20 @@ if ($err) {
       $html   .= 'This is a computer generated receipt of an online payment.';
       $html   .= '</footer>';
 
+      
       if (!empty($mailstudents)) {
         $a = new stdClass();
         $a->coursename = format_string($course->fullname, true, array('context' => $coursecontext));
         $a->profileurl = "$CFG->wwwroot/user/view.php?id=$USER->id";
+        $studentmessage = '<p>Dear '.fullname($user).',</p>
+
+        <p>This is to inform you that you have been enrolled for the course "'.$course->fullname.'" .</p>
+        
+        <p> Please go to  '.$CFG->wwwroot.'/course/view.php?id='.$course->id.'  and log in to start your revision now!</p>
+        
+        <p>Best Wishes,</p>
+        
+        <p>LMS Admin</p>';
 
         $eventdata = new \core\message\message();
         $eventdata->courseid          = $course->id;
@@ -214,7 +224,7 @@ if ($err) {
         $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
         $eventdata->fullmessage       = get_string('welcometocoursetext', '', $a);
         $eventdata->fullmessageformat = FORMAT_PLAIN;
-        $eventdata->fullmessagehtml   = '';
+        $eventdata->fullmessagehtml   = $studentmessage;
         $eventdata->smallmessage      = '';
         message_send($eventdata);
 
@@ -245,7 +255,7 @@ if ($err) {
         $eventdata->userfrom          = $user;
         $eventdata->userto            = $teacher;
         $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
-        $eventdata->fullmessage       = get_string('enrolmentnewuser', 'enrol', $a);
+        $eventdata->fullmessage       = get_string('enrolmentnewuser', 'enrol_phonepe', $a);
         $eventdata->fullmessageformat = FORMAT_PLAIN;
         $eventdata->fullmessagehtml   = '';
         $eventdata->smallmessage      = '';
@@ -259,7 +269,7 @@ if ($err) {
         $eventdatareceipt->userfrom          = $user;
         $eventdatareceipt->userto            = $teacher;
         $eventdatareceipt->subject           = get_string("paymentreceipt", 'enrol_phonepe');
-        $eventdatareceipt->fullmessage       = get_string('enrolmentnewuser', 'enrol', $a);
+        $eventdatareceipt->fullmessage       = get_string('enrolmentnewuser', 'enrol_phonepe', $a);
         $eventdatareceipt->fullmessageformat = FORMAT_PLAIN;
         $eventdatareceipt->fullmessagehtml   = $html;
         $eventdatareceipt->smallmessage      = '';
@@ -279,7 +289,7 @@ if ($err) {
           $eventdata->userfrom          = $user;
           $eventdata->userto            = $admin;
           $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
-          $eventdata->fullmessage       = get_string('enrolmentnewuser', 'enrol', $a);
+          $eventdata->fullmessage       = get_string('enrolmentnewuser', 'enrol_phonepe', $a);
           $eventdata->fullmessageformat = FORMAT_PLAIN;
           $eventdata->fullmessagehtml   = '';
           $eventdata->smallmessage      = '';
@@ -293,7 +303,7 @@ if ($err) {
           $eventdatareceipt->userfrom          = $user;
           $eventdatareceipt->userto            = $admin;
           $eventdatareceipt->subject           = get_string("paymentreceipt", 'enrol_phonepe');
-          $eventdatareceipt->fullmessage       = get_string('enrolmentnewuser', 'enrol', $a);
+          $eventdatareceipt->fullmessage       = get_string('enrolmentnewuser', 'enrol_phonepe', $a);
           $eventdatareceipt->fullmessageformat = FORMAT_PLAIN;
           $eventdatareceipt->fullmessagehtml   = $html;
           $eventdatareceipt->smallmessage      = '';
