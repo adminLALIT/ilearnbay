@@ -54,6 +54,7 @@ class mod_webexactivity_mod_form extends \moodleform_mod {
             $mform->addElement('static', 'typestatic', get_string('meetingtype', 'webexactivity'), $typename);
         } else {
             $meetingtypes = \mod_webexactivity\meeting::get_available_types($this->context);
+         
             if (count($meetingtypes) == 0) {
                 throw new \coding_exception('There are no valid meeting types for this user. Admin must fix.');
             } else if (count($meetingtypes) == 1) {

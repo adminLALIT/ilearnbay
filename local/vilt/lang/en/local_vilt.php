@@ -15,25 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   local_recommendation
+ * @package   local_vilt
  * @copyright 2021 Derick Turner
  * @author    Derick Turner
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-$string['pluginname'] = 'Course Recommendation';
-$string['recommendation:courserec'] = '';
-$string['selectcompany'] = 'Select Company';
-$string['selectcourse'] = 'Select Course';
-$string['selectcontent'] = 'Select Content';
-$string['selectcurator'] = 'Select Curator User';
-$string['domainname'] = 'Domain Name';
-$string['searchdomain'] = 'Search Domain';
-$string['domainexist'] = 'Domain Exists';
-$string['selectdomain'] = 'Select Domain';
-$string['profilerule'] = 'PROFILE RULES';
-$string['profilefield'] = 'Profile Field';
-$string['addmorefield'] = 'Blanks for {no} more field';
+$string['pluginname'] = 'VILT';
+$string['vilttraining'] = 'VILT Training';
 $string['nopermission'] = 'Sorry you dont have permission to access this page.';
-$string['emptyvideos'] = 'Sorry there is no video available.';
-$string['emptykeyword'] = 'Please enter the keyword.';
-$string['courserecommend'] = 'Course Recommendation';
+$string['description'] = 'Description';
+$string['alreadyexist'] = 'Already exists';
+

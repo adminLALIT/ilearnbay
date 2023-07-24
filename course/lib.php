@@ -2255,7 +2255,12 @@ function create_course($data, $editoroptions = NULL) {
         // Save the files used in the summary editor and store
         $data = file_postupdate_standard_editor($data, 'summary', $editoroptions, $context, 'course', 'summary', 0);
         $DB->set_field('course', 'summary', $data->summary, array('id'=>$newcourseid));
+        if (!$data->summary_format) {           # code...
+            $data->summary_format = 1;
+        }
+       
         $DB->set_field('course', 'summaryformat', $data->summary_format, array('id'=>$newcourseid));
+
     }
     if ($overviewfilesoptions = course_overviewfiles_options($newcourseid)) {
         // Save the course overviewfiles
