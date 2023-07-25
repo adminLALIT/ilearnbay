@@ -25,4 +25,5 @@ $string['vilttraining'] = 'VILT Training';
 $string['nopermission'] = 'Sorry you dont have permission to access this page.';
 $string['description'] = 'Description';
 $string['alreadyexist'] = 'Already exists';
+$string['company'] = 'Company';
 
