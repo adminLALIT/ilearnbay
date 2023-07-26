@@ -40,7 +40,7 @@ class viltlist extends \table_sql
   function col_meetingtype($values)
   {
     $meetingtype = getmeetingtype();
-
+ 
     return ($meetingtype[$values->meetingtype]);
   }
 
@@ -73,8 +73,10 @@ class viltlist extends \table_sql
     $buttons[] = html_writer::link($url, $OUTPUT->pix_icon('t/delete', 'Delete'));
     $url = new moodle_url('createvilt.php', array('id' => $values->id));
     $buttons[] = html_writer::link($url, $OUTPUT->pix_icon('t/edit', 'Edit'));
-    $url = new moodle_url('adduser.php', array('id' => $values->id));
-    $buttons[] = html_writer::link($url, '<i class="fa fa-user-plus" aria-hidden="true" title="Add user"></i>');
+    if ($values->meetingtype == 'onlyinvited') {
+      $url = new moodle_url('adduser.php', array('id' => $values->course, 'company' => $values->companyid));
+      $buttons[] = html_writer::link($url, '<i class="fa fa-user-plus" aria-hidden="true" title="Add user"></i>');
+    }
 
     return implode(' ', $buttons);
   }

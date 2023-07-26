@@ -68,8 +68,8 @@ if ($mform->is_cancelled()) {
     }
 }
 
-$field = 'wa.*, c.name as companyname, vr.meetingtype';
-$from = '{webexactivity} wa JOIN {viltrecord} vr LEFT JOIN {company} c ON c.id = vr.companyid';
+$field = 'wa.*, c.name as companyname, c.id as companyid,  vr.meetingtype';
+$from = '{webexactivity} wa JOIN {viltrecord} vr ON vr.webexid = wa.id LEFT JOIN {company} c ON c.id = vr.companyid';
 // Work out the sql for the table.
 $table->set_sql($field, $from, $where);
 $table->no_sorting('companyname');

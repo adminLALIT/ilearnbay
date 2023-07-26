@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/vilt/db" VERSION="20230724" COMMENT="XMLDB file for Moodle local/vilt"
+<XMLDB PATH="local/vilt/db" VERSION="20230726" COMMENT="XMLDB file for Moodle local/vilt"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -14,6 +14,20 @@
         <FIELD NAME="creatorid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="webexmeeting_members" COMMENT="Assigned members to meeting records saved.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="webexid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="assignorid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

@@ -26,4 +26,9 @@ $string['nopermission'] = 'Sorry you dont have permission to access this page.';
 $string['description'] = 'Description';
 $string['alreadyexist'] = 'Already exists';
 $string['company'] = 'Company';
+$string['assignto'] = 'Assigned to {$a}';
+$string['cancel'] = 'Cancel';
+$string['newenrolment'] = 'New Enrolment';
+$string['welcometocoursetext'] = 'Welcome to {$a->coursename}!';
+$string['messageprovider:meeting_enrolment'] = '';
 
