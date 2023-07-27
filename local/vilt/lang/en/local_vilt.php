@@ -32,3 +32,4 @@ $string['newenrolment'] = 'New Enrolment';
 $string['welcometocoursetext'] = 'Welcome to {$a->coursename}!';
 $string['messageprovider:meeting_enrolment'] = '';
 
+

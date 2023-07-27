@@ -53,6 +53,19 @@ function is_student()
     }
 }
 
+function is_companyuser()
+{
+    global $DB, $USER;
+
+    if ($check = $DB->record_exists('company_users', ['userid' => $USER->id])) {
+        if ($check) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    } 
+}
 function get_vimeo_content($query)
 {
     $curl = curl_init();

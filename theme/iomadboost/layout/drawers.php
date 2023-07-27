@@ -115,4 +115,8 @@ if (is_student()) {
     $templatecontext['student'] = true;
 }
 
+if (is_companyuser()) {
+    $templatecontext['student'] = true;
+}
+
 echo $OUTPUT->render_from_template('theme_iomadboost/drawers', $templatecontext);

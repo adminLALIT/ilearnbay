@@ -1,0 +1,68 @@
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.table-wrap {
+  max-width: 800px;
+  overflow-x: auto;
+}
+
+table, td, th {
+  border: 1px solid #ddd;
+  text-align: left;
+  font-size:18px;
+  text-transform:capitalize;
+}
+th{
+    background: #000000d6;
+    color: #fff;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 15px;
+  white-space: nowrap;
+}
+
+table tbody tr:nth-child(odd) {
+    background: #CDCDCD;
+    color: #000;
+    font-weight: 500;
+}
+
+.box-wrap {
+  padding: 0px 16px;
+}/*# sourceMappingURL=main.css.map */
+</style>
+
+ <div class="box-wrap">
+        <div class="table-wrap">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Session Name</td>
+                        <td>{{sessionname}}</td>
+                    </tr>
+                    <tr>
+                        <td>Company Name</td>
+                        <td>{{company}}</td>
+                    </tr>
+                    <tr>
+                        <td>Session Start Date</td>
+                        <td>{{startdate}}</td>
+                  
+                    </tr>
+                    <tr>
+                        <td>Duration</td>
+                        <td>{{duration}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>

@@ -77,6 +77,10 @@ class viltlist extends \table_sql
       $url = new moodle_url('adduser.php', array('id' => $values->course, 'company' => $values->companyid));
       $buttons[] = html_writer::link($url, '<i class="fa fa-user-plus" aria-hidden="true" title="Add user"></i>');
     }
+    if ($values->meetingtype == 'openuser') {
+      $url = new moodle_url('request.php', array('id' => $values->course, 'company' => $values->companyid));
+      $buttons[] = html_writer::link($url, '<i class="fa fa-thumbs-up fa-fw" aria-hidden="true" title="Approval"></i>');
+    }
 
     return implode(' ', $buttons);
   }

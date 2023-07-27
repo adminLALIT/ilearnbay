@@ -127,7 +127,7 @@ function lp_add_member($courseid, $userid)
         $result = $plugin->enrol_user($instance, $userid, $roleid, $timestart, $timeend);
         
     }
-
+    
 }
 
 /**
