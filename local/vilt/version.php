@@ -22,6 +22,6 @@
  */
 
 $plugin->release  = '4.1.2 (Build: 20230313)'; // Human-friendly version name
-$plugin->version  = 2023030903;   // The (date) version of this plugin.
+$plugin->version  = 2023030904;   // The (date) version of this plugin.
 $plugin->requires = 2019052000;   // Requires this Moodle version.
 $plugin->component  = 'local_vilt';

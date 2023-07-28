@@ -41,43 +41,45 @@ echo $OUTPUT->header();
 $meetingrecord = $DB->get_record('webexactivity', ['id' => $meetingid]);
 $companyerecord = $DB->get_record('company', ['id' => $companyid]);
 $data = [
-'sessionname' => $meetingrecord->name,
-'company' => $companyerecord->name,
-'startdate' => date('d-m-Y h:i:s a',$meetingrecord->starttime),
-'duration' => $meetingrecord->duration." (min)",
+    'sessionname' => $meetingrecord->name,
+    'company' => $companyerecord->name,
+    'startdate' => date('d-m-Y h:i:s a', $meetingrecord->starttime),
+    'duration' => $meetingrecord->duration . " (min)",
 ];
 echo $OUTPUT->render_from_template('local_vilt/enrolment', $data);
 
-if ($DB->record_exists('meeting_requests', ['userid' => $USER->id, 'companyid' => $companyid, 'meetingid' => $meetingid, 'status' => 'pending'])) {
-    $getrecord = $DB->get_record('meeting_requests', ['userid' => $USER->id, 'companyid' => $companyid, 'meetingid' => $meetingid, 'status' => 'pending']);
-    $msg = 'Your request message has been waiting to approve. Please wait for confirmation.';
+$viltrecord = $DB->get_record('viltrecord', ['webexid' => $meetingid]);
+if ($viltrecord->meetingtype == 'openuser') {
+    if ($DB->record_exists('meeting_requests', ['userid' => $USER->id, 'companyid' => $companyid, 'meetingid' => $meetingid, 'status' => 'pending'])) {
+        $getrecord = $DB->get_record('meeting_requests', ['userid' => $USER->id, 'companyid' => $companyid, 'meetingid' => $meetingid, 'status' => 'pending']);
+        $msg = 'Your request message has been waiting to approve. Please wait for confirmation.';
+        $requesturl = 'enrol.php';
+        $requestparam =  array('meetingid' => $meetingid, 'companyid' => $companyid, 'userid' => $USER->id, 'cancel' => $getrecord->id);
+        $request = 'Cancel';
+        $classparam = ['class' => 'btn btn-primary'];
+        echo \core\notification::error($msg);
+    } elseif ($DB->record_exists('meeting_requests', ['userid' => $USER->id, 'companyid' => $companyid, 'meetingid' => $meetingid, 'status' => 'approved'])) {
+        $request = 'Enrolled';
+        $requesturl = '#';
+        $requestparam = [];
+        $classparam = ['class' => 'btn btn-success', 'style' => 'pointer-events:none;'];
+    } elseif ($DB->record_exists('meeting_requests', ['userid' => $USER->id, 'companyid' => $companyid, 'meetingid' => $meetingid, 'status' => 'declined'])) {
+        $request = 'Declined';
+        $requesturl = '#';
+        $requestparam = [];
+        $classparam = ['class' => 'btn btn-danger', 'style' => 'pointer-events:none;'];
+    } else {
+        $requesturl = 'enrol.php';
+        $requestparam = array('meetingid' => $meetingid, 'companyid' => $companyid, 'userid' => $USER->id);
+        $classparam = ['class' => 'btn btn-primary'];
+        $request = 'Enrol';
+    }
+} else {
     $requesturl = 'enrol.php';
-    $requestparam =  array('meetingid' => $meetingid, 'companyid' => $companyid, 'userid' => $USER->id, 'cancel' => $getrecord->id);
-    $request = 'Cancel';
-    $classparam = ['class' => 'btn btn-primary'];
-    echo \core\notification::error($msg);
-}
-elseif ($DB->record_exists('meeting_requests', ['userid' => $USER->id, 'companyid' => $companyid, 'meetingid' => $meetingid, 'status' => 'approved'])) {
-    $request = 'Enrolled';
-    $requesturl = '#';
-    $requestparam = [];
-    $classparam = ['class' => 'btn btn-success', 'style' => 'pointer-events:none;'];
-    
-}
-elseif ($DB->record_exists('meeting_requests', ['userid' => $USER->id, 'companyid' => $companyid, 'meetingid' => $meetingid, 'status' => 'declined'])) {
-    $request = 'Declined';
-    $requesturl = '#';
-    $requestparam = [];
-    $classparam = ['class' => 'btn btn-danger', 'style' => 'pointer-events:none;'];
-    
-}
-else {
-    $requesturl = 'enrol.php';
-    $requestparam = array('meetingid' => $meetingid, 'companyid' => $companyid, 'userid' => $USER->id);
+    $requestparam = array('meetingid' => $meetingid, 'companyid' => $companyid, 'userid' => $USER->id, 'type' => 'all');
     $classparam = ['class' => 'btn btn-primary'];
     $request = 'Enrol';
 }
-
 echo html_writer::start_tag('div', ['style' => 'margin: 16px;']);
 $url = new moodle_url($requesturl, $requestparam);
 $buttons[] = html_writer::link($url, $request, $classparam);

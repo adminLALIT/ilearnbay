@@ -115,7 +115,7 @@ abstract class user1_selector_base {
 
         // Populate the list of additional user identifiers to display.
         // $this->extrafields = get_extra_user_fields($this->accesscontext);
-        $this->extrafields = \core_user\fields::for_identity($this->accesscontext)->including('email')->get_required_fields();;
+        $this->extrafields = \core_user\fields::for_identity($this->accesscontext)->including('email')->get_required_fields();
 
         if (isset($options['exclude']) && is_array($options['exclude'])) {
             $this->exclude = $options['exclude'];
