@@ -42,7 +42,7 @@ $PAGE->set_title('Approval Request');
 $PAGE->set_pagelayout('admin');
 echo $OUTPUT->header();
 $requests = $DB->get_records('meeting_requests', ['courseid' => $courseid]);
-
+$url = new moodle_url('/local/vilt/request.php', ['id' => $courseid]);
 $waitinglist = [];
 $approvedlist = [];
 $declinedlist = [];
@@ -67,14 +67,14 @@ echo html_writer::tag('p', 'Waitinglist Users ('.count($waitinglist).')');
 echo html_writer::tag('p', 'Declined Users ('.count($declinedlist).')', ['style' => 'color:red;']);
 
 $table = new \local_vilt\requestlist('uniqueid');
-$where = '1=1';
+$where = 'courseid='.$courseid;
 $field = 'u.*, mr.courseid, mr.status, mr.id as requestid';
 $from = '{user} u JOIN {meeting_requests} mr ON mr.userid = u.id';
 // Work out the sql for the table.
 $table->set_sql($field, $from, $where);
 $table->no_sorting('companyname');
 $table->no_sorting('action');
-$table->define_baseurl("$CFG->wwwroot/local/vilt/trainingdata.php");
+$table->define_baseurl($url);
 
 $table->out(10, true);
 

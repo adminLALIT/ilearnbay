@@ -6,7 +6,7 @@ function xmldb_local_vilt_upgrade($oldversion): bool
 
     $dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
 
-    if ($oldversion < 2023030915) {
+    if ($oldversion < 2023030916) {
         // Perform the upgrade from version 2023051103 to the next version.
 
         // The content of this section should be generated using the XMLDB Editor.
@@ -57,7 +57,18 @@ function xmldb_local_vilt_upgrade($oldversion): bool
             $dbman->create_table($table);
         }
 
-   
+        $table2 = new xmldb_table('registration_fields');
+        if (!$dbman->table_exists($table2)) {
+            $dbman->install_one_table_from_xmldb_file(__DIR__.'/install.xml', 'registration_fields');
+        }
+
+        $table3 = new xmldb_table('timer');
+        if (!$dbman->table_exists($table3)) {
+            $dbman->install_one_table_from_xmldb_file(__DIR__.'/install.xml', 'timer');
+        }
+
+        upgrade_plugin_savepoint(true, '2023030916', 'local', 'vilt');
+
     }
 
     if ($oldversion < 2023051103) {

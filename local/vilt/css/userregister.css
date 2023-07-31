@@ -1,0 +1,55 @@
+#form_register label{font-size:14px;}
+#form_register{
+    width: 90%;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    padding: 20px;
+}
+#form_register .error{
+font-size:11px;
+color:red;
+margin-top:2px;
+font-style: italic;
+}
+.downmsg {
+    font-size: 15px;
+    color: green;
+    margin-left: 2px;
+    font-style: italic;
+}
+.downtimer{
+    font-size: 15px;
+    color: green;
+    margin-left: 2px;
+    font-style: italic;
+}
+#page-login-signup header .logo{padding-bottom: 14px; text-align: left;margin-left: -9px;}
+
+.help-inline{
+	font-size:11px;
+	color:red;
+	margin-top:2px;
+	font-style: italic;
+}
+
+
+/* */
+
+#otp-sec label{
+display: inline-block;
+}
+#otp-sec .form-group.col-md-12{
+    display: block;
+    width: auto;
+}
+
+#otp-sec #id_otp-error{
+margin:0 20px 0 0;
+}
+
+#otp-sec #condition-error{
+    position: absolute;
+    bottom: -15px;
+    left: 0;
+    width: 100%;
+}

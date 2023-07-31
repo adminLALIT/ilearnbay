@@ -70,27 +70,36 @@ foreach ($openuserdata as $value) {
 }
 
 // All registered User.
-// $allregistereddata = $DB->get_records_sql("SELECT wa.*, c.name as companyname, c.id as companyid,  vr.meetingtype FROM {webexactivity} wa JOIN {viltrecord} vr ON vr.webexid = wa.id JOIN {} LEFT JOIN {company} c ON c.id = vr.companyid WHERE vr.companyid = $companyid AND vr.meetingtype = 'openuser'");
-// $meetingtype = getmeetingtype();
-// foreach ($allregistereddata as $value) {
-//     if ($DB->record_exists('')) {
-//         # code...
-//     }
-//     $url = new moodle_url('sessionenrolment.php', array('id' => $value->id, 'company' => $value->companyid));
-//     $buttons[] = html_writer::link($url, 'Sign Up');
-//     $openuserrecord[] = [
-//         'meetingtype' => $meetingtype[$value->meetingtype],
-//         'starttime' => date('Y-m-d H:i:s a', $value->starttime),
-//         'companyname' => $value->companyname,
-//         'meetingname' => $value->name,
-//         'duration' => $value->duration,
-//         'status' => implode(' ', $buttons),
-//     ];
-// }
-
+$allregistereddata = $DB->get_records_sql("SELECT wa.*, c.name as companyname, c.id as companyid,  vr.meetingtype FROM {webexactivity} wa JOIN {viltrecord} vr ON vr.webexid = wa.id  LEFT JOIN {company} c ON c.id = vr.companyid WHERE vr.companyid = $companyid AND vr.meetingtype = 'all'");
+$registeruserrecord = [];
+$meetingtype = getmeetingtype();
+foreach ($allregistereddata as $value) {
+    if ($DB->record_exists('profilemapping', ['meetingid' => $value->id])) {
+        $profilematch = [];
+        $profilerecord = $DB->get_records('profilemapping', ['meetingid' => $value->id]);
+        foreach ($profilerecord as  $profilevalue) {
+            if ($DB->record_exists_sql("SELECT ud.* FROM {user_info_data} ud WHERE ud.userid = $USER->id AND ud.fieldid = $profilevalue->profileid AND ud.data = '$profilevalue->profilevalue'")) {
+                $profilematch[] = $profilevalue->profileid;
+            }
+        }
+        if (count($profilematch) > 0) {
+            $url = new moodle_url('sessionenrolment.php', array('id' => $value->id, 'company' => $value->companyid));
+            $signupbuttons[] = html_writer::link($url, 'Sign Up');
+            $registeruserrecord[] = [
+                'meetingtype' => $meetingtype[$value->meetingtype],
+                'starttime' => date('Y-m-d H:i:s a', $value->starttime),
+                'companyname' => $value->companyname,
+                'meetingname' => $value->name,
+                'duration' => $value->duration,
+                'status' => implode(' ', $signupbuttons),
+            ];
+        }
+    }
+}
 
 $data = [
-    'openuserrecord' => $openuserrecord
+    'openuserrecord' => $openuserrecord,
+    'registeruserrecord' => $registeruserrecord
 ];
 echo $OUTPUT->render_from_template('local_vilt/catalog', $data);
 echo $OUTPUT->footer();

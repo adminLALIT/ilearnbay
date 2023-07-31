@@ -32,5 +32,19 @@ $string['newenrolment'] = 'New Enrolment';
 $string['welcometocoursetext'] = 'Welcome to {$a->coursename}!';
 $string['messageprovider:meeting_enrolment'] = '';
 $string['chooseprofile'] = 'Select Profile';
+$string['selectfield'] = 'Select fields';
+$string['category'] = 'Category';
+$string['course'] = 'Course';
+$string['formsetup'] = 'Registration Form Setup';
+$string['modulename'] = 'Module Name';
+$string['meetingname'] = 'Meeting Name';
+$string['meetingstarttime'] = 'Meeting Start Time';
+$string['examendtime'] = 'Exam End Time';
+$string['assignedusers'] = 'Assigned Users';
+$string['registeredusers'] = 'Registered Users';
+$string['inviteusers'] = 'Invited Users';
+$string['formlink'] = 'Registration Form';
+$string['webexactivity'] = 'Webex Activity';
+$string['meetingduration'] = 'Meeting Duration';
 
 

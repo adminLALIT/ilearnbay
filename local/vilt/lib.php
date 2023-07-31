@@ -272,3 +272,7 @@ function arraysyntax_tosql($arraysyntax, &$join_id = 0)
         'params' => $params
     );
 }
+
+function get_required_fields() {
+    return ['username' => 'Username', 'email' => 'Email', 'firstname' => 'First Name', 'lastname' => 'Last Name', 'password' => 'Password'];
+}

@@ -49,7 +49,7 @@ $data = [
 echo $OUTPUT->render_from_template('local_vilt/enrolment', $data);
 
 $viltrecord = $DB->get_record('viltrecord', ['webexid' => $meetingid]);
-if ($viltrecord->meetingtype == 'openuser') {
+if ($viltrecord->meetingtype == 'openuser' || $viltrecord->meetingtype == 'all') {
     if ($DB->record_exists('meeting_requests', ['userid' => $USER->id, 'companyid' => $companyid, 'meetingid' => $meetingid, 'status' => 'pending'])) {
         $getrecord = $DB->get_record('meeting_requests', ['userid' => $USER->id, 'companyid' => $companyid, 'meetingid' => $meetingid, 'status' => 'pending']);
         $msg = 'Your request message has been waiting to approve. Please wait for confirmation.';

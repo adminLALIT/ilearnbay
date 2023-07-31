@@ -77,7 +77,7 @@ class viltlist extends \table_sql
       $url = new moodle_url('adduser.php', array('id' => $values->course, 'company' => $values->companyid));
       $buttons[] = html_writer::link($url, '<i class="fa fa-user-plus" aria-hidden="true" title="Add user"></i>');
     }
-    if ($values->meetingtype == 'openuser') {
+    if ($values->meetingtype == 'openuser' || $values->meetingtype == 'all' || $values->meetingtype == 'public') {
       $url = new moodle_url('request.php', array('id' => $values->course, 'company' => $values->companyid));
       $buttons[] = html_writer::link($url, '<i class="fa fa-thumbs-up fa-fw" aria-hidden="true" title="Approval"></i>');
     }
@@ -85,8 +85,17 @@ class viltlist extends \table_sql
       $url = new moodle_url('assignprofile.php', array('id' => $values->course, 'company' => $values->companyid));
       $buttons[] = html_writer::link($url, '<i class="fa fa-user-plus" aria-hidden="true" title="Assign Profile Field"></i>');
     }
+    if ($values->meetingtype == 'public') {
+      $url = new moodle_url('registrationsetup.php', array('id' => $values->course, 'company' => $values->companyid));
+      $buttons[] = html_writer::link($url, '<i class="fa fa-file" aria-hidden="true" title="Registration Form Setup"></i>');
+      $url = new moodle_url('meetingoverview.php', array('id' => $values->course, 'company' => $values->companyid));
+      $buttons[] = html_writer::link($url, '<i class="fa fa-list-alt" aria-hidden="true" title="Meeting Overview Page"></i>');
+      
+    }
     $url = new moodle_url('/course/view.php', array('id' => $values->course));
-    $buttons[] = html_writer::link($url, '<svg title="view meeting" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#005eff}</style><path d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"/></svg>');
+    $buttons[] = html_writer::link($url, '<i class="fa fa-meetup" aria-hidden="true" title="View Meeting"></i>
+    ');
+
     
     return implode(' ', $buttons);
   }
