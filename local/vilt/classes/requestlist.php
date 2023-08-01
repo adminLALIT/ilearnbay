@@ -41,18 +41,23 @@ class requestlist extends \table_sql
 
   function col_status($values)
   {
-
-    if ($values->status == 'pending') {
-      $url = new moodle_url('enrol.php', array('userid' => $values->id, 'courseid' => $values->courseid, 'enrol' => true, 'requestid' => $values->requestid));
-      $buttons[] = html_writer::link($url, 'Approve', ['class' => 'btn btn-primary']);
-      $url = new moodle_url('enrol.php', array('userid' => $values->id, 'courseid' => $values->courseid, 'decline' => true, 'requestid' => $values->requestid));
-      $buttons[] = html_writer::link($url, 'Decline', ['class' => 'btn btn-danger']);
+    if ($values->meetingtype == 'public') {
+      $url = new moodle_url('viewdetail.php', array('userid' => $values->id, 'courseid' => $values->courseid, 'enrol' => true, 'requestid' => $values->requestid));
+      $buttons[] = html_writer::link($url, 'View More', ['style' => 'Color:blue;' ]);
     }
-    if ($values->status == 'approved') {
-      $buttons[] = html_writer::link('#', 'Approved', ['style' => 'pointer-events:none;', 'class' => 'btn btn-success']);
-    }
-    if ($values->status == 'declined') {
-      $buttons[] = html_writer::link('#', 'Declined', ['style' => 'pointer-events:none;', 'class' => 'btn btn-danger']);
+    else {
+      if ($values->status == 'pending') {
+        $url = new moodle_url('enrol.php', array('userid' => $values->id, 'courseid' => $values->courseid, 'enrol' => true, 'requestid' => $values->requestid));
+        $buttons[] = html_writer::link($url, 'Approve', ['class' => 'btn btn-primary']);
+        $url = new moodle_url('enrol.php', array('userid' => $values->id, 'courseid' => $values->courseid, 'decline' => true, 'requestid' => $values->requestid));
+        $buttons[] = html_writer::link($url, 'Decline', ['class' => 'btn btn-danger']);
+      }
+      if ($values->status == 'approved') {
+        $buttons[] = html_writer::link('#', 'Approved', ['style' => 'pointer-events:none;', 'class' => 'btn btn-success']);
+      }
+      if ($values->status == 'declined') {
+        $buttons[] = html_writer::link('#', 'Declined', ['style' => 'pointer-events:none;', 'class' => 'btn btn-danger']);
+      }
     }
 
     return implode(' ', $buttons);

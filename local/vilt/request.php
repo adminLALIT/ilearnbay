@@ -67,9 +67,9 @@ echo html_writer::tag('p', 'Waitinglist Users ('.count($waitinglist).')');
 echo html_writer::tag('p', 'Declined Users ('.count($declinedlist).')', ['style' => 'color:red;']);
 
 $table = new \local_vilt\requestlist('uniqueid');
-$where = 'courseid='.$courseid;
-$field = 'u.*, mr.courseid, mr.status, mr.id as requestid';
-$from = '{user} u JOIN {meeting_requests} mr ON mr.userid = u.id';
+$where = 'mr.courseid='.$courseid;
+$field = 'u.*, mr.courseid, mr.status, mr.id as requestid, vr.meetingtype';
+$from = '{user} u JOIN {meeting_requests} mr ON mr.userid = u.id LEFT JOIN {viltrecord} vr ON vr.webexid = mr.meetingid';
 // Work out the sql for the table.
 $table->set_sql($field, $from, $where);
 $table->no_sorting('companyname');
